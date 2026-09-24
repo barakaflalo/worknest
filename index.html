@@ -198,6 +198,21 @@ pre.diag{white-space:pre-wrap;word-break:break-word;font-size:12px;background:va
 .aboutlogo b{font:500 28px var(--fd)}
 .disc{font-size:14px;color:var(--mut);border-inline-start:3px solid var(--acc);padding:4px 12px;margin:14px 0}
 #printRoot{display:none}
+.navbtn.wide{grid-column:1/-1;flex-direction:row;align-items:center;min-height:60px}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart .bar{fill:var(--acc)}.chart .bar.dim{fill:var(--ln)}.chart .bar.o{fill:var(--acc2)}
+.chart text{fill:var(--mut);font:12px var(--f)}.chart text.v{fill:var(--tx);font-weight:700}
+.chart line{stroke:var(--ln)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+.stat small.up{color:var(--ok)}.stat small.down{color:var(--dng)}
+h1[tabindex="-1"]:focus{outline:none}
+.kv span:last-child{direction:ltr;unicode-bidi:isolate}
+.hbar{display:grid;grid-template-columns:7.5em 1fr auto;gap:10px;align-items:center;padding:6px 0;font-size:15px}
+.hbar i{display:block;height:10px;border-radius:6px;background:var(--acc);min-width:2px}
+.jobrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--ln)}.jobrow:last-child{border-bottom:0}
+.jobrow .n{flex:1;font-weight:700}.jobrow b{font:500 17px var(--fd)}
+.net{color:var(--acc)}
+
 .linkbtn{background:transparent;border:0;color:var(--acc);font-weight:700;text-decoration:underline;min-height:44px;padding:0 8px;margin:0 auto;display:block}
 .chips{display:flex;flex-wrap:wrap;gap:8px;padding:10px 0}
 .chips button{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--acc);background:transparent;color:var(--acc);font-weight:700}
@@ -241,6 +256,8 @@ pre.diag{white-space:pre-wrap;word-break:break-word;font-size:12px;background:va
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
   <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-nfc" viewBox="0 0 24 24"><path d="M6 8.5a5 5 0 010 7M9.5 6a9 9 0 010 12M13 3.5a13 13 0 010 17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 11v6M12 7.5v.01" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
   <symbol id="i-in" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M14 4h5a2 2 0 012 2v12a2 2 0 01-2 2h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-out" viewBox="0 0 24 24"><path d="M16 17l5-5-5-5M21 12H9M10 4H5a2 2 0 00-2 2v12a2 2 0 002 2h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -291,6 +308,7 @@ pre.diag{white-space:pre-wrap;word-break:break-word;font-size:12px;background:va
   <button class="navbtn" data-go="add"><svg><use href="#i-plus"/></svg><span data-t="manualAdd"></span></button>
   <button class="navbtn" data-go="jobs"><svg><use href="#i-brief"/></svg><span data-t="jobs"></span></button>
   <button class="navbtn" data-go="settings"><svg><use href="#i-gear"/></svg><span data-t="settings"></span></button>
+  <button class="navbtn wide" data-go="stats"><svg><use href="#i-chart"/></svg><span data-t="stats"></span></button>
  </nav>
  <p class="badge">AppNest · <span id="verLbl"></span></p>
 </section>
@@ -336,6 +354,12 @@ pre.diag{white-space:pre-wrap;word-break:break-word;font-size:12px;background:va
 <section class="screen" id="s-settings">
  <div class="bar"><button class="backbtn" data-back><svg><use href="#i-back"/></svg><span data-t="back"></span></button><h1 data-t="settings"></h1></div>
  <div id="setForm"></div>
+</section>
+
+<!-- STATS -->
+<section class="screen" id="s-stats">
+ <div class="bar"><button class="backbtn" data-back><svg><use href="#i-back"/></svg><span data-t="back"></span></button><h1 data-t="stats"></h1></div>
+ <div id="statsBody"></div>
 </section>
 
 <!-- BIN -->
@@ -560,6 +584,53 @@ csvTitle:['דוח שעות','Hours report','Отчёт по часам','Informe
 exported:['הופק','Exported','Создано','Exportado','تم التصدير'],
 weekday:['יום','Day','День','Día','اليوم'],
 kind:['סוג','Type','Тип','Tipo','النوع'],
+stats:['סטטיסטיקה','Statistics','Статистика','Estadísticas','الإحصاءات'],
+thisJob:['העבודה הזו','This job','Эта работа','Este trabajo','هذا العمل'],
+allJobs:['כל העבודות','All jobs','Все работы','Todos los trabajos','كل الأعمال'],
+lastPeriods:['שכר ב-6 התקופות האחרונות','Pay over the last 6 periods','Оплата за последние 6 периодов','Salario en los últimos 6 periodos','الأجر في آخر 6 فترات'],
+lastMonths:['שכר ב-6 החודשים האחרונים','Pay over the last 6 months','Оплата за последние 6 месяцев','Salario en los últimos 6 meses','الأجر في آخر 6 أشهر'],
+weeksChart:['שעות לפי שבוע בתקופה','Hours per week this period','Часы по неделям за период','Horas por semana en el periodo','الساعات لكل أسبوع في الفترة'],
+byType:['שעות לפי סוג משמרת','Hours by shift type','Часы по типу смены','Horas por tipo de turno','الساعات حسب نوع الوردية'],
+avgShift:['ממוצע למשמרת','Average per shift','В среднем за смену','Media por turno','المتوسط لكل وردية'],
+effHourly:['שכר ממוצע לשעה','Average pay per hour','Средняя оплата в час','Salario medio por hora','متوسط الأجر للساعة'],
+vsPrev:['{p} לעומת התקופה הקודמת','{p} vs. the previous period','{p} к прошлому периоду','{p} frente al periodo anterior','{p} مقارنة بالفترة السابقة'],
+weekN:['שבוע {n}','Week {n}','Неделя {n}','Semana {n}','الأسبوع {n}'],
+perJob:['לפי עבודה, החודש','By job, this month','По работам, этот месяц','Por trabajo, este mes','حسب العمل، هذا الشهر'],
+allJobsNote:['סכומי ברוטו של כל העבודות לפי חודש קלנדרי. הנטו מוערך לכל עבודה בנפרד, כי משרה שנייה ממוסה אחרת.','Gross totals of all jobs by calendar month. Net is estimated per job, since a second job is taxed differently.','Суммы брутто по всем работам за календарный месяц. Нетто оценивается по каждой работе отдельно, так как вторая работа облагается иначе.','Totales brutos de todos los trabajos por mes natural. El neto se estima por trabajo, porque un segundo empleo tributa distinto.','إجماليات الأجر لكل الأعمال حسب الشهر. يُقدَّر الصافي لكل عمل على حدة لأن العمل الثاني يُضرب بشكل مختلف.'],
+noData:['אין עדיין נתונים להצגה. אחרי כמה משמרות יופיעו כאן גרפים.','No data yet. Charts appear here after a few shifts.','Данных пока нет. Графики появятся после нескольких смен.','Aún no hay datos. Los gráficos aparecen tras unos turnos.','لا توجد بيانات بعد. ستظهر الرسوم بعد بضع ورديات.'],
+netEst:['נטו משוער','Estimated net','Примерно нетто','Neto estimado','الصافي التقديري'],
+netCalc:['הערכת נטו','Net pay estimate','Оценка нетто','Estimación del neto','تقدير الصافي'],
+netOn:['הצג הערכת נטו','Show net estimate','Показывать оценку нетто','Mostrar neto estimado','عرض تقدير الصافي'],
+points:['נקודות זיכוי','Tax credit points','Налоговые льготные баллы','Puntos de crédito fiscal','نقاط الائتمان الضريبي'],
+pointsHint:['תושב/ת ישראל: 2.25 (אישה 2.75). ילדים, תואר ועוד מוסיפים נקודות.','Israeli resident: 2.25 (women 2.75). Children, degrees and more add points.','Житель Израиля: 2,25 (женщины 2,75). Дети, диплом и др. добавляют баллы.','Residente en Israel: 2,25 (mujeres 2,75). Hijos, títulos y más suman puntos.','المقيم في إسرائيل: 2.25 (المرأة 2.75). الأولاد والشهادة وغيرها تضيف نقاطًا.'],
+pensionPct:['הפרשת עובד לפנסיה (%)','Employee pension contribution (%)','Пенсионный взнос работника (%)','Aportación del empleado a la pensión (%)','مساهمة الموظف في التقاعد (%)'],
+studyPct:['הפרשת עובד לקרן השתלמות (%)','Employee study fund contribution (%)','Взнос работника в фонд повышения квалификации (%)','Aportación del empleado al fondo de estudios (%)','مساهمة الموظف في صندوق الاستكمال (%)'],
+incomeTax:['מס הכנסה','Income tax','Подоходный налог','Impuesto sobre la renta','ضريبة الدخل'],
+niHealth:['ביטוח לאומי ובריאות','National Insurance and health','Нацстрахование и здоровье','Seguridad social y salud','التأمين الوطني والصحي'],
+pension:['פנסיה','Pension','Пенсия','Pensión','التقاعد'],
+study:['קרן השתלמות','Study fund','Фонд повышения квалификации','Fondo de estudios','صندوق الاستكمال'],
+taxTable:['מדרגות מס וביטוח לאומי ({y})','Tax and National Insurance rates ({y})','Ставки налога и нацстрахования ({y})','Tramos fiscales y seguridad social ({y})','شرائح الضريبة والتأمين الوطني ({y})'],
+taxTableHint:['מעודכן ל-2026. אם השיעורים ישתנו, אפשר לעדכן אותם כאן.','Updated for 2026. If the rates change, you can update them here.','Обновлено на 2026 год. Если ставки изменятся, их можно обновить здесь.','Actualizado para 2026. Si cambian los tipos, puedes actualizarlos aquí.','محدّث لعام 2026. إذا تغيرت النسب يمكنك تحديثها هنا.'],
+bracketUpTo:['מדרגה {n} עד (₪)','Bracket {n} up to (₪)','Ступень {n} до (₪)','Tramo {n} hasta (₪)','الشريحة {n} حتى (₪)'],
+ratePct:['שיעור (%)','Rate (%)','Ставка (%)','Tipo (%)','النسبة (%)'],
+topRate:['שיעור מעל המדרגה האחרונה (%)','Rate above the last bracket (%)','Ставка выше последней ступени (%)','Tipo por encima del último tramo (%)','النسبة فوق الشريحة الأخيرة (%)'],
+pointValue:['שווי נקודת זיכוי לחודש (₪)','Credit point value per month (₪)','Стоимость балла в месяц (₪)','Valor del punto al mes (₪)','قيمة النقطة شهريًا (₪)'],
+niLow:['ביטוח לאומי: מדרגה מופחתת עד (₪)','National Insurance: reduced rate up to (₪)','Нацстрахование: пониженная ставка до (₪)','Seguridad social: tipo reducido hasta (₪)','التأمين الوطني: النسبة المخفضة حتى (₪)'],
+niLowRate:['שיעור מופחת (%)','Reduced rate (%)','Пониженная ставка (%)','Tipo reducido (%)','النسبة المخفضة (%)'],
+niHighRate:['שיעור מלא (%)','Full rate (%)','Полная ставка (%)','Tipo completo (%)','النسبة الكاملة (%)'],
+niMax:['תקרת ביטוח לאומי (₪)','National Insurance ceiling (₪)','Потолок нацстрахования (₪)','Tope de seguridad social (₪)','سقف التأمين الوطني (₪)'],
+pensionCap:['תקרת שכר לזיכוי פנסיה (₪)','Salary cap for pension credit (₪)','Потолок зарплаты для пенсионной льготы (₪)','Tope salarial para el crédito de pensión (₪)','سقف الراتب لائتمان التقاعد (₪)'],
+resetRates:['החזר לשיעורי 2026','Reset to 2026 rates','Вернуть ставки 2026','Restablecer tipos de 2026','إعادة نسب 2026'],
+netDisclaimer:['הערכה בלבד: מניחה שזו העבודה היחידה ושהשכר החודשי יציב. התלוש הרשמי הוא הקובע.','Estimate only: assumes this is your only job and a steady monthly wage. Your payslip is what counts.','Только оценка: предполагается, что это единственная работа и зарплата стабильна. Решает официальный расчётный лист.','Solo una estimación: supone que es tu único empleo y un sueldo estable. Lo que cuenta es tu nómina.','تقدير فقط: يفترض أنه عملك الوحيد وأن الراتب ثابت. القسيمة الرسمية هي المرجع.'],
+nfc:['תגית NFC','NFC tag','NFC-метка','Etiqueta NFC','وسم NFC'],
+nfcHint:['מצמידים תגית במקום העבודה. נגיעה של הטלפון בתגית פותחת את WorkNest ומחתימה כניסה, ונגיעה נוספת מחתימה יציאה.','Stick a tag at work. Tapping your phone on it opens WorkNest and clocks you in; tapping again clocks you out.','Прикрепите метку на работе. Касание телефоном открывает WorkNest и начинает смену, повторное касание завершает её.','Pega una etiqueta en el trabajo. Al acercar el teléfono se abre WorkNest y fichas la entrada; otra vez, la salida.','ألصق وسمًا في مكان العمل. لمس الهاتف له يفتح WorkNest ويسجل البدء، ولمسة أخرى تسجل الانتهاء.'],
+nfcWrite:['כתוב תגית לעבודה "{n}"','Write a tag for "{n}"','Записать метку для «{n}»','Grabar etiqueta para «{n}»','كتابة وسم لـ "{n}"'],
+nfcHold:['הצמד תגית לגב הטלפון…','Hold a tag to the back of your phone…','Поднесите метку к задней части телефона…','Acerca una etiqueta a la parte trasera del teléfono…','قرّب الوسم من ظهر الهاتف…'],
+nfcDone:['התגית נכתבה','Tag written','Метка записана','Etiqueta grabada','تمت كتابة الوسم'],
+nfcFail:['כתיבת התגית נכשלה','Writing the tag failed','Не удалось записать метку','No se pudo grabar la etiqueta','فشلت كتابة الوسم'],
+nfcNo:['הדפדפן הזה לא יכול לכתוב תגיות (נתמך בכרום באנדרואיד). אפשר להעתיק את הקישור ולכתוב אותו לתגית עם אפליקציה כמו NFC Tools.','This browser can\'t write tags (supported in Chrome on Android). Copy the link and write it to a tag with an app like NFC Tools.','Этот браузер не может записывать метки (поддерживается в Chrome на Android). Скопируйте ссылку и запишите её приложением вроде NFC Tools.','Este navegador no puede grabar etiquetas (funciona en Chrome para Android). Copia el enlace y grábalo con una app como NFC Tools.','هذا المتصفح لا يكتب الوسوم (مدعوم في كروم على أندرويد). انسخ الرابط واكتبه بتطبيق مثل NFC Tools.'],
+copyLink:['העתק קישור לתגית','Copy tag link','Копировать ссылку для метки','Copiar enlace de la etiqueta','نسخ رابط الوسم'],
+nfcBusy:['התגית נסרקה לפני רגע ולכן לא נרשמה פעולה','The tag was just scanned, so nothing was recorded','Метка только что считана, действие не записано','La etiqueta se acaba de leer, no se registró nada','تمت قراءة الوسم للتو، لذلك لم يُسجَّل شيء'],
 fixStart:['תקן שעת כניסה','Fix start time','Исправить время начала','Corregir hora de entrada','تصحيح وقت البدء'],
 fixStartQ:['מתי נכנסת למשמרת?','When did you start this shift?','Когда вы начали смену?','¿A qué hora empezaste el turno?','متى بدأت هذه الوردية؟'],
 fixStartHint:['שעה מאוחרת מעכשיו תיחשב כאתמול','A time later than now counts as yesterday','Время позже текущего считается вчерашним','Una hora posterior a la actual cuenta como ayer','الوقت اللاحق للآن يُحتسب من الأمس'],
@@ -590,7 +661,7 @@ autoHolidaysHint:['משמרת בחג תחושב בתעריף שבת/חג, מער
 <script>
 /* WorkNest — core. Single file PWA, AppNest. Data stays on device (localStorage via shim). */
 'use strict';
-const VERSION='1.1.0';
+const VERSION='1.2.0';
 const SKEY='worknest_state_v1', EKEY='worknest_errors';
 const DAY_MS=86400000;
 
@@ -633,14 +704,17 @@ function defTypes(){return{
  night:{base:7,h1:2,p0:100,p1:125,p2:150,from:'22:00',to:'06:00'},
  shabbat:{base:8,h1:2,p0:150,p1:175,p2:200,fromDay:5,from:'16:00',toDay:6,to:'20:00'}}}
 function newJob(name){return{id:uid(),name:name||T('defaultJob'),color:'#D4AF37',wage:50,dayPayAuto:true,dayPay:400,fixedAdd:0,fixedDed:0,
- breakMin:0,breakAfter:6,travel:0,overtime:true,periodStart:1,autoHolidays:true,templates:[],types:defTypes(),absence:{holiday:100,vacation:100,sick:100,reserve:100}}}
+ breakMin:0,breakAfter:6,travel:0,overtime:true,periodStart:1,autoHolidays:true,templates:[],net:{on:true,points:2.25,pension:6,study:0},types:defTypes(),absence:{holiday:100,vacation:100,sick:100,reserve:100}}}
+/* Israeli payroll rates 2026 (tax brackets widened Mar-2026 retroactive to Jan; NI reduced band 7,703; ceiling 51,910). Editable in Settings. */
+function defTax(){return{year:2026,point:242,br:[[7010,10],[10060,14],[19000,20],[25100,31],[46690,35],[60130,47]],top:50,niLow:7703,niLowRate:4.27,niHighRate:12.17,niMax:51910,penCap:9700,penRate:35}}
 function defState(){const guess=(navigator.language||'he').slice(0,2);const lang=LANGS.includes(guess)?guess:'he';
- const s={v:1,lang,theme:'gold',mode:'night',notif:false,user:'',onboarded:false,lastBackup:0,jobs:[],cur:null,active:null,shifts:[]};return s}
+ const s={v:1,lang,theme:'gold',mode:'night',notif:false,tax:defTax(),lastNfc:0,user:'',onboarded:false,lastBackup:0,jobs:[],cur:null,active:null,shifts:[]};return s}
 let S=defState();
 function migrate(o){const d=defState();const s=Object.assign(d,o||{});
  if(!Array.isArray(s.jobs))s.jobs=[];if(!Array.isArray(s.shifts))s.shifts=[];
  s.jobs=s.jobs.map(j=>{const n=newJob(j.name);const m=Object.assign(n,j);m.types=Object.assign(defTypes(),j.types||{});
-  for(const k in m.types)m.types[k]=Object.assign(defTypes()[k],(j.types||{})[k]||{});m.absence=Object.assign(n.absence,j.absence||{});return m});
+  for(const k in m.types)m.types[k]=Object.assign(defTypes()[k],(j.types||{})[k]||{});m.absence=Object.assign(n.absence,j.absence||{});m.net=Object.assign(n.net,j.net||{});if(!Array.isArray(m.templates))m.templates=[];return m});
+ s.tax=Object.assign(defTax(),s.tax||{});if(!Array.isArray(s.tax.br)||!s.tax.br.length)s.tax.br=defTax().br;
  if(!['day','night'].includes(s.mode))s.mode='night';
  if(!['gold','silver','copper','emerald','sapphire'].includes(s.theme))s.theme='gold';
  if(!LANGS.includes(s.lang))s.lang='he';
@@ -701,9 +775,21 @@ function periodOf(ms,j){const P=Math.min(28,Math.max(1,Math.round(num(j.periodSt
  let y=d.getFullYear(),m=d.getMonth();if(d.getDate()<P){m--;if(m<0){m=11;y--}}return{y,m,P}}
 function periodRange(p){return{from:new Date(p.y,p.m,p.P).getTime(),to:new Date(p.y,p.m+1,p.P).getTime()}}
 function shiftsIn(from,to,jobId){return S.shifts.filter(s=>!s.deleted&&s.jobId===jobId&&s.start>=from&&s.start<to).sort((a,b)=>a.start-b.start)}
-function summary(from,to,j){const list=shiftsIn(from,to,j.id);let min=0,gross=0;list.forEach(s=>{const c=calc(s,j);min+=c.min;gross+=c.pay});
+function summary(from,to,j){const list=shiftsIn(from,to,j.id);let min=0,gross=0,travel=0,wn=0;const byType={};list.forEach(s=>{const c=calc(s,j);min+=c.min;gross+=c.pay;travel+=c.travel;if(s.kind==='work'){wn++;byType[c.type]=(byType[c.type]||0)+c.min}});
  const hasAny=list.length>0;const fa=hasAny?num(j.fixedAdd):0,fd=hasAny?num(j.fixedDed):0;
- return{n:list.length,min,gross:r2(gross),fixedAdd:fa,fixedDed:fd,total:r2(gross+fa-fd),list}}
+ return{n:list.length,wn,min,gross:r2(gross),travel:r2(travel),byType,fixedAdd:fa,fixedDed:fd,total:r2(gross+fa-fd),list}}
+/* net estimate — monthly Israeli payroll approximation */
+function bracketTax(x,t){let tax=0,prev=0;for(const[lim,rate]of t.br){const l=num(lim);if(x<=prev)break;tax+=(Math.min(x,l)-prev)*num(rate)/100;prev=l}if(x>prev)tax+=(x-prev)*num(t.top)/100;return tax}
+function netOf(gross,travel,j){const t=S.tax,n=j.net||{};gross=Math.max(0,num(gross));const base=Math.max(0,gross-num(travel));
+ const pension=base*num(n.pension)/100,study=base*num(n.study)/100;
+ const penCredit=Math.min(pension,0.07*Math.min(base,num(t.penCap)))*num(t.penRate)/100;
+ const tax=Math.max(0,bracketTax(gross,t)-num(n.points)*num(t.point)-penCredit);
+ const lo=Math.min(gross,num(t.niLow)),hi=Math.max(0,Math.min(gross,num(t.niMax))-num(t.niLow));const ni=lo*num(t.niLowRate)/100+hi*num(t.niHighRate)/100;
+ return{gross:r2(gross),tax:r2(tax),ni:r2(ni),pension:r2(pension),study:r2(study),net:r2(gross-tax-ni-pension-study)}}
+function netLines(sm,j){if(!(j.net&&j.net.on)||!sm.n)return'';const n=netOf(sm.total,sm.travel,j);
+ return'<div class="kv"><span>'+esc(T('incomeTax'))+'</span><span>−'+money(n.tax)+'</span></div><div class="kv"><span>'+esc(T('niHealth'))+'</span><span>−'+money(n.ni)+'</span></div>'+
+  (n.pension?'<div class="kv"><span>'+esc(T('pension'))+'</span><span>−'+money(n.pension)+'</span></div>':'')+(n.study?'<div class="kv"><span>'+esc(T('study'))+'</span><span>−'+money(n.study)+'</span></div>':'')+
+  '<div class="kv net"><span><b>'+esc(T('netEst'))+'</b></span><span><b>'+money(n.net)+'</b></span></div><p class="note">'+esc(T('netDisclaimer'))+'</p>'}
 
 /* ---------- live shift ---------- */
 function activeElapsedMs(now){const a=S.active;if(!a)return 0;now=now||Date.now();
@@ -754,7 +840,7 @@ function printReport(){const j=job();const p=viewP&&viewP.jobId===j.id?viewP:per
  '<table><thead><tr><th>'+esc(T('date'))+'</th><th>'+esc(T('kind'))+'</th><th>'+esc(T('inLbl'))+'</th><th>'+esc(T('outLbl'))+'</th><th class="n">'+esc(T('hours'))+'</th><th class="n">'+esc(T('pay'))+'</th><th>'+esc(T('note'))+'</th></tr></thead><tbody>'+(rows||'<tr><td colspan="7">'+esc(T('noShifts'))+'</td></tr>')+'</tbody></table>'+
  '<div class="sum"><div><span>'+esc(T('reports'))+'</span><span>'+sm.n+'</span></div><div><span>'+esc(T('hours'))+'</span><span>'+fmtH(sm.min)+'</span></div><div><span>'+esc(T('gross'))+'</span><span>'+esc(money(sm.gross))+'</span></div>'+
  (sm.fixedAdd?'<div><span>'+esc(T('fixedAdd'))+'</span><span>+'+esc(money(sm.fixedAdd))+'</span></div>':'')+(sm.fixedDed?'<div><span>'+esc(T('fixedDed'))+'</span><span>−'+esc(money(sm.fixedDed))+'</span></div>':'')+
- '<div class="t"><span>'+esc(T('total'))+'</span><span>'+esc(money(sm.total))+'</span></div></div><p class="foot">'+esc(T('disclaimer'))+'<br>WorkNest v'+VERSION+' · AppNest</p>';
+ '<div class="t"><span>'+esc(T('total'))+'</span><span>'+esc(money(sm.total))+'</span></div>'+((j.net&&j.net.on&&sm.n)?(()=>{const n=netOf(sm.total,sm.travel,j);return'<div><span>'+esc(T('incomeTax'))+'</span><span>−'+esc(money(n.tax))+'</span></div><div><span>'+esc(T('niHealth'))+'</span><span>−'+esc(money(n.ni))+'</span></div>'+(n.pension?'<div><span>'+esc(T('pension'))+'</span><span>−'+esc(money(n.pension))+'</span></div>':'')+(n.study?'<div><span>'+esc(T('study'))+'</span><span>−'+esc(money(n.study))+'</span></div>':'')+'<div class="t"><span>'+esc(T('netEst'))+'</span><span>'+esc(money(n.net))+'</span></div>'})():'')+'</div><p class="foot">'+((j.net&&j.net.on)?esc(T('netDisclaimer'))+'<br>':'')+esc(T('disclaimer'))+'<br>WorkNest v'+VERSION+' · AppNest</p>';
  const old=document.title;document.title='WorkNest-'+j.name+'-'+isoDate(pr.from);toast(T('pdfHint'));
  const done=()=>{document.title=old;R.innerHTML='';window.removeEventListener('afterprint',done)};window.addEventListener('afterprint',done);
  setTimeout(()=>{try{window.print()}catch(e){logErr('print: '+e.message)}},300)}
@@ -772,7 +858,7 @@ function rerenderAll(){applyLook();applyLang();renderHome();const cur=screenStac
 
 /* ---------- navigation ---------- */
 const screenStack=['home'];
-const RENDER={shifts:renderShifts,add:renderAdd,jobs:renderJobs,job:renderJob,settings:renderSettings,bin:renderBin,diag:renderDiag,about:renderAbout,home:renderHome};
+const RENDER={stats:()=>renderStats(),shifts:renderShifts,add:renderAdd,jobs:renderJobs,job:renderJob,settings:renderSettings,bin:renderBin,diag:renderDiag,about:renderAbout,home:renderHome};
 function go(name,noPush){if(name==='add'&&!noPush){startNewShift()}
  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id==='s-'+name));
  if(!noPush){screenStack.push(name);try{history.pushState({s:name},'')}catch(e){}}
@@ -883,7 +969,7 @@ function renderShifts(){const j=job();if(!viewP||viewP.jobId!==j.id)viewP=Object
  $('#sumDetail').innerHTML='<div class="sumdetail"><div class="kv"><span>'+esc(T('gross'))+'</span><span>'+money(sm.gross)+'</span></div>'+
   (sm.fixedAdd?'<div class="kv"><span>'+esc(T('fixedAdd'))+'</span><span>+'+money(sm.fixedAdd)+'</span></div>':'')+
   (sm.fixedDed?'<div class="kv"><span>'+esc(T('fixedDed'))+'</span><span>−'+money(sm.fixedDed)+'</span></div>':'')+
-  '<div class="kv"><span><b>'+esc(T('total'))+'</b></span><span><b>'+money(sm.total)+'</b></span></div></div><div style="height:70px"></div>';
+  '<div class="kv"><span><b>'+esc(T('total'))+'</b></span><span><b>'+money(sm.total)+'</b></span></div>'+netLines(sm,j)+'</div><div style="height:70px"></div>';
  $('#sumBar').hidden=false;$('#sbN').textContent=sm.n;$('#sbH').textContent=fmtH(sm.min);$('#sbP').textContent=money(sm.total)}
 function typeColor(t){return({morning:'var(--acc)',afternoon:'var(--acc2)',night:'#7d86a8',shabbat:'#c9a0dc'})[t]||'var(--acc)'}
 function shiftDetail(s,c,j){let h='';
@@ -973,6 +1059,7 @@ function renderJob(){const j=S.jobs.find(x=>x.id===editJobId)||job();editJobId=j
  '<details class="tblock"><summary><span class="dot" style="background:'+typeColor('afternoon')+'"></span>'+esc(T('t_afternoon'))+'</summary><div class="body">'+nf(T('afternoonStart'),'types.afternoon.start',t.afternoon.start,{type:'time'})+tierBlock('afternoon',t.afternoon)+'</div></details>'+
  '<details class="tblock"><summary><span class="dot" style="background:'+typeColor('night')+'"></span>'+esc(T('t_night'))+'</summary><div class="body"><p class="note">'+esc(T('nightHint'))+'</p>'+nf(T('nightFrom'),'types.night.from',t.night.from,{type:'time'})+nf(T('nightTo'),'types.night.to',t.night.to,{type:'time'})+tierBlock('night',t.night)+'</div></details>'+
  '<details class="tblock"><summary><span class="dot" style="background:'+typeColor('shabbat')+'"></span>'+esc(T('t_shabbat'))+'</summary><div class="body"><p class="note">'+esc(T('shabbatHint'))+'</p>'+sw(T('autoHolidays'),'autoHolidays',j.autoHolidays!==false)+'<p class="note">'+esc(T('autoHolidaysHint'))+'</p>'+daySel(T('shabbatFrom'),'types.shabbat.fromDay',t.shabbat.fromDay)+nf(T('shabbatFrom'),'types.shabbat.from',t.shabbat.from,{type:'time'})+daySel(T('shabbatTo'),'types.shabbat.toDay',t.shabbat.toDay)+nf(T('shabbatTo'),'types.shabbat.to',t.shabbat.to,{type:'time'})+tierBlock('shabbat',t.shabbat)+'</div></details></div>'+
+ '<div class="card"><h2>'+esc(T('netCalc'))+'</h2>'+sw(T('netOn'),'net.on',j.net.on)+nf(T('points'),'net.points',j.net.points,{hint:T('pointsHint')})+nf(T('pensionPct'),'net.pension',j.net.pension)+nf(T('studyPct'),'net.study',j.net.study)+'</div>'+
  '<div class="card"><h2>'+esc(T('quickShifts'))+'</h2><p class="note">'+esc(T('quickHint'))+'</p><div id="tplList"></div>'+
  '<div class="tpladd"><label class="full">'+esc(T('tplName'))+'<input type="text" id="tN" maxlength="30" placeholder="'+esc(T('tplDefault'))+'"></label><label>'+esc(T('start'))+'<input type="time" id="tS" value="08:00"></label><label>'+esc(T('end'))+'<input type="time" id="tE" value="17:00"></label><label class="full">'+esc(T('pauseMin'))+'<input type="number" inputmode="numeric" min="0" id="tP" value="0"></label><button class="btn full" id="tAdd"><svg><use href="#i-plus"/></svg>'+esc(T('addTemplate'))+'</button></div></div>'+
  '<div class="card"><h2>'+esc(T('absencePay'))+'</h2>'+['holiday','vacation','sick','reserve'].map(k=>nf(T('k_'+k)+' %','absence.'+k,j.absence[k])).join('')+'</div>'+
@@ -1002,6 +1089,11 @@ function renderSettings(){const lb=S.lastBackup?fmtDay(S.lastBackup,{day:'numeri
  let h='<div class="card"><div class="fld col"><label for="sName">'+esc(T('userName'))+'<small>'+esc(T('userNameHint'))+'</small></label><input type="text" id="sName" maxlength="40" value="'+esc(S.user)+'" style="width:100%;min-height:46px;border-radius:10px;border:1px solid var(--ln);background:var(--sf2);padding:6px 12px"></div>'+
  '<div class="fld"><label for="sLang">'+esc(T('language'))+'</label><select id="sLang">'+LANGS.map((l,i)=>'<option value="'+l+'"'+(S.lang===l?' selected':'')+'>'+LANG_NAMES[i]+'</option>').join('')+'</select></div></div>'+
  '<div class="card"><h2>'+esc(T('theme'))+'</h2>'+themeControls()+'</div>'+
+ '<div class="card"><h2>'+esc(T('nfc'))+'</h2><p class="note">'+esc(T('nfcHint'))+'</p>'+('NDEFReader' in window?'<button class="linkrow" id="sNfc"><svg><use href="#i-nfc"/></svg>'+esc(T('nfcWrite',{n:job().name}))+'</button>':'<p class="note">'+esc(T('nfcNo'))+'</p>')+'<button class="linkrow" id="sNfcCopy"><svg><use href="#i-share"/></svg>'+esc(T('copyLink'))+'</button></div>'+
+ '<details class="card tblock" style="padding:0"><summary>'+esc(T('taxTable',{y:S.tax.year}))+'</summary><div class="body"><p class="note">'+esc(T('taxTableHint'))+'</p>'+
+  S.tax.br.map((b,i)=>'<div class="row2"><label class="fld" style="display:block;border:0">'+esc(T('bracketUpTo',{n:i+1}))+'<input type="number" inputmode="decimal" data-tx="br.'+i+'.0" value="'+b[0]+'" style="width:100%"></label><label class="fld" style="display:block;border:0">'+esc(T('ratePct'))+'<input type="number" inputmode="decimal" step="any" data-tx="br.'+i+'.1" value="'+b[1]+'" style="width:100%"></label></div>').join('')+
+  [['topRate','top'],['pointValue','point'],['niLow','niLow'],['niLowRate','niLowRate'],['niHighRate','niHighRate'],['niMax','niMax'],['pensionCap','penCap']].map(r=>'<div class="fld"><label>'+esc(T(r[0]))+'</label><input type="number" inputmode="decimal" step="any" data-tx="'+r[1]+'" value="'+S.tax[r[1]]+'"></div>').join('')+
+  '<button class="btn ghost" id="sTaxReset" style="margin:10px 0">'+esc(T('resetRates'))+'</button></div></details>'+
  '<div class="card"><div class="fld"><label for="sNotif">'+esc(T('notifShift'))+'<small>'+esc(T('notifHint'))+'</small></label><span class="sw"><input type="checkbox" id="sNotif" '+(S.notif?'checked':'')+'><span></span></span></div></div>'+
  '<div class="card"><h2>'+esc(T('backup'))+'</h2><p class="note">'+esc(T('lastBackup',{d:lb}))+'</p>'+
   '<button class="linkrow" id="sExp"><svg><use href="#i-save"/></svg>'+esc(T('exportJson'))+'</button>'+
@@ -1019,6 +1111,9 @@ function renderSettings(){const lb=S.lastBackup?fmtDay(S.lastBackup,{day:'numeri
  $('#sLang').onchange=e=>{S.lang=e.target.value;save();rerenderAll()};
  $('#sExp').onclick=exportJSON;$('#sImp').onclick=()=>$('#sFile').click();$('#sFile').onchange=importJSON;$('#sCsv').onclick=exportCSV;
  $('#sTour').onclick=()=>onboarding(0);$('#sPdf').onclick=printReport;
+ F.querySelectorAll('[data-tx]').forEach(e=>e.addEventListener('input',()=>{const p=e.dataset.tx.split('.');if(p[0]==='br')S.tax.br[+p[1]][+p[2]]=num(e.value);else S.tax[p[0]]=num(e.value);save()}));
+ $('#sTaxReset').onclick=()=>{S.tax=defTax();save();renderSettings()};
+ const nb=$('#sNfc');if(nb)nb.onclick=writeNfc;$('#sNfcCopy').onclick=async()=>{try{await navigator.clipboard.writeText(nfcUrl());toast(T('copied'))}catch(e){toast(nfcUrl())}};
  $('#sNotif').onchange=async e=>{const cb=e.target;if(!cb.checked){S.notif=false;save();syncNotif();return}
   if(!('Notification' in window)){cb.checked=false;toast(T('notifNo'));return}
   let perm=Notification.permission;if(perm==='default'){try{perm=await Notification.requestPermission()}catch(x){perm='denied'}}
@@ -1092,6 +1187,50 @@ function onboarding(i){const steps=[['ob1t','ob1b'],['ob2t','ob2b'],['ob3t','ob3
   sh.querySelector('#obSkip').onclick=fin;sh.querySelector('#obNext').onclick=()=>{if(last)fin();else onboarding(i+1)};
   const ol=sh.querySelector('#obLang');if(ol)ol.onchange=()=>{S.lang=ol.value;save();rerenderAll();onboarding(0)}})}
 
+/* ---------- NFC ---------- */
+function nfcUrl(jid){return location.origin+location.pathname+'?nfc='+encodeURIComponent(jid||S.cur)}
+async function writeNfc(){try{const r=new NDEFReader();toast(T('nfcHold'));await r.write({records:[{recordType:'url',data:nfcUrl()}]});toast(T('nfcDone'));vib([30,60,30])}catch(e){logErr('nfc: '+e.name+' '+e.message);toast(T('nfcFail'))}}
+function handleNfc(jid){const now=Date.now();if(now-(S.lastNfc||0)<15000){toast(T('nfcBusy'));return}S.lastNfc=now;save();
+ if(S.active){clockOut(false);return}
+ if(jid&&S.jobs.find(j=>j.id===jid))S.cur=jid;clockIn()}
+
+/* ---------- STATS ---------- */
+let statsAll=false;
+function shortMoney(n){n=+n||0;return '₪'+(n>=10000?(Math.round(n/100)/10)+'K':Math.round(n).toLocaleString('en-US'))}
+function barChart(items,opt){opt=opt||{};const W=340,H=170,top=22,bot=30,n=items.length;if(!n)return'';const max=Math.max(1,...items.map(i=>i.v));const bw=Math.min(40,(W/n)*0.6),gap=W/n;
+ let s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(opt.label||'')+'"><line x1="0" x2="'+W+'" y1="'+(H-bot)+'" y2="'+(H-bot)+'"/>';
+ const rtl=S.lang==='he'||S.lang==='ar';
+ items.forEach((it,i)=>{const idx=rtl?n-1-i:i;const x=idx*gap+(gap-bw)/2;const h=(H-top-bot)*it.v/max;const y=H-bot-h;
+  s+='<rect class="bar'+(it.cls?' '+it.cls:'')+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(h,it.v>0?2:0).toFixed(1)+'" rx="4"/>'+
+   '<text class="v" x="'+(x+bw/2).toFixed(1)+'" y="'+(y-6).toFixed(1)+'" text-anchor="middle">'+esc(it.t)+'</text><text x="'+(x+bw/2).toFixed(1)+'" y="'+(H-10)+'" text-anchor="middle">'+esc(it.l)+'</text>'});
+ return s+'</svg>'}
+function pct(a,b){if(!b)return'';const p=Math.round((a-b)/b*100);return(p>0?'+':'')+p+'%'}
+function renderStats(){const B=$('#statsBody');const j=job();
+ let h='<div class="seg" role="group"><button data-sa="0" aria-pressed="'+!statsAll+'">'+esc(T('thisJob'))+'</button><button data-sa="1" aria-pressed="'+statsAll+'">'+esc(T('allJobs'))+'</button></div>';
+ const any=S.shifts.some(s=>!s.deleted);
+ if(!any){B.innerHTML=h+'<div class="empty"><b>'+esc(T('noData'))+'</b></div>';bindSA();return}
+ if(!statsAll){const cur=periodOf(Date.now(),j);const pers=[];for(let k=5;k>=0;k--){const p={y:cur.y,m:cur.m-k,P:cur.P};while(p.m<0){p.m+=12;p.y--}pers.push(p)}
+  const sums=pers.map(p=>{const r=periodRange(p);return Object.assign(summary(r.from,r.to,j),{r})});const now=sums[5],prev=sums[4];
+  const net=(j.net&&j.net.on&&now.n)?netOf(now.total,now.travel,j).net:null;
+  h+='<div class="kpis"><div class="stat"><small>'+esc(T('thisPeriod'))+'</small><div class="v">'+fmtH(now.min)+'</div><div class="v2">'+money(now.total)+'</div>'+(prev.total?'<small class="'+(now.total>=prev.total?'up':'down')+'">'+esc(T('vsPrev',{p:pct(now.total,prev.total)}))+'</small>':'')+'</div>'+
+   '<div class="stat"><small>'+esc(T('netEst'))+'</small><div class="v">'+(net!==null?money(net):'—')+'</div></div>'+
+   '<div class="stat"><small>'+esc(T('avgShift'))+'</small><div class="v">'+(now.wn?fmtH(now.min/now.wn):'—')+'</div><div class="v2">'+(now.wn?money(r2(now.gross/Math.max(1,now.n))):'')+'</div></div>'+
+   '<div class="stat"><small>'+esc(T('effHourly'))+'</small><div class="v">'+(now.min?money(r2(now.gross/(now.min/60))):'—')+'</div><div class="v2">'+esc(T('reports'))+': '+now.n+'</div></div></div>';
+  h+='<div class="card"><h2>'+esc(T('lastPeriods'))+'</h2>'+barChart(sums.map((s,i)=>({v:s.total,t:s.total?shortMoney(s.total):'',l:fmtDay(s.r.from+DAY_MS*3,{month:'short'}),cls:i===5?'':'dim'})),{label:T('lastPeriods')})+'</div>';
+  const wk=[];const r=now.r;for(let a=r.from,i=1;a<r.to;a=new Date(new Date(a).setDate(new Date(a).getDate()+7)).getTime(),i++){const b=Math.min(r.to,new Date(new Date(a).setDate(new Date(a).getDate()+7)).getTime());const m=now.list.filter(s=>s.start>=a&&s.start<b).reduce((x,s)=>x+calc(s,j).min,0);wk.push({v:m,t:m?fmtH(m):'',l:String(i)})}
+  h+='<div class="card"><h2>'+esc(T('weeksChart'))+'</h2>'+barChart(wk,{label:T('weeksChart')})+'</div>';
+  const types=['morning','afternoon','night','shabbat'].filter(k=>now.byType[k]);const mx=Math.max(1,...types.map(k=>now.byType[k]));
+  if(types.length)h+='<div class="card"><h2>'+esc(T('byType'))+'</h2>'+types.map(k=>'<div class="hbar"><span>'+esc(T('t_'+k))+'</span><i style="width:'+Math.round(now.byType[k]/mx*100)+'%;background:'+typeColor(k)+'"></i><span>'+fmtH(now.byType[k])+'</span></div>').join('')+'</div>';
+ }else{const d=new Date();const months=[];for(let k=5;k>=0;k--)months.push({y:d.getFullYear(),m:d.getMonth()-k,P:1});months.forEach(p=>{while(p.m<0){p.m+=12;p.y--}});
+  const tot=months.map(p=>{const r=periodRange(p);let g=0,mn=0;S.jobs.forEach(jj=>{const s=summary(r.from,r.to,jj);g+=s.total;mn+=s.min});return{r,g:r2(g),mn}});const now=tot[5];
+  h+='<div class="kpis"><div class="stat"><small>'+esc(fmtDay(now.r.from,{month:'long',year:'numeric'}))+'</small><div class="v">'+fmtH(now.mn)+'</div><div class="v2">'+money(now.g)+'</div>'+(tot[4].g?'<small class="'+(now.g>=tot[4].g?'up':'down')+'">'+esc(T('vsPrev',{p:pct(now.g,tot[4].g)}))+'</small>':'')+'</div>'+
+   '<div class="stat"><small>'+esc(T('effHourly'))+'</small><div class="v">'+(now.mn?money(r2(now.g/(now.mn/60))):'—')+'</div><div class="v2">'+esc(T('jobs'))+': '+S.jobs.length+'</div></div></div>';
+  h+='<div class="card"><h2>'+esc(T('lastMonths'))+'</h2>'+barChart(tot.map((s,i)=>({v:s.g,t:s.g?shortMoney(s.g):'',l:fmtDay(s.r.from,{month:'short'}),cls:i===5?'':'dim'})),{label:T('lastMonths')})+'</div>';
+  h+='<div class="card"><h2>'+esc(T('perJob'))+'</h2>'+S.jobs.map(jj=>{const s=summary(now.r.from,now.r.to,jj);const nt=(jj.net&&jj.net.on&&s.n)?netOf(s.total,s.travel,jj).net:null;
+   return'<div class="jobrow"><span class="dot" style="background:'+esc(jj.color)+'"></span><span class="n">'+esc(jj.name)+'<small style="display:block;color:var(--mut);font-weight:400">'+fmtH(s.min)+(nt!==null?' · '+esc(T('netEst'))+' '+money(nt):'')+'</small></span><b>'+money(s.total)+'</b></div>'}).join('')+'<p class="note">'+esc(T('allJobsNote'))+'</p></div>'}
+ B.innerHTML=h;bindSA()}
+function bindSA(){$('#statsBody').querySelectorAll('[data-sa]').forEach(b=>b.onclick=()=>{statsAll=b.dataset.sa==='1';renderStats()})}
+
 /* ---------- wiring ---------- */
 function bindGo(root){root.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go))}
 function init(){load();applyLook();applyLang();bindGo(document);
@@ -1101,10 +1240,11 @@ function init(){load();applyLook();applyLang();bindGo(document);
  $('#btnNewJob').onclick=addJob;$('#btnQuick').onclick=quickSheet;$('#btnFix').onclick=fixStart;$('#btnPdf').onclick=printReport;
  $('#pPrev').onclick=()=>{viewP.m--;if(viewP.m<0){viewP.m=11;viewP.y--}renderShifts()};
  $('#pNext').onclick=()=>{viewP.m++;if(viewP.m>11){viewP.m=0;viewP.y++}renderShifts()};
- try{history.replaceState({s:'home'},'')}catch(e){}
+ let nfcJob=null;try{const q=new URLSearchParams(location.search);if(q.has('nfc'))nfcJob=q.get('nfc')||'';history.replaceState({s:'home'},'',location.pathname)}catch(e){}
  if(location.protocol==='file:')$('#fileWarn').innerHTML='<div class="banner warn" style="margin:10px 16px"><p style="margin:0">'+esc(T('fileWarn'))+'</p></div>';
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderHome()});
  renderHome();save();syncNotif();
+ if(nfcJob!==null)setTimeout(()=>handleNfc(nfcJob),300);
  if(!S.onboarded)onboarding(0);
  if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(e=>logErr('sw: '+e.message))}
 init();
