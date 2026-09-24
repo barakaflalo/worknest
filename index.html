@@ -182,7 +182,7 @@ input[type=number]{direction:ltr}
 .sheet{width:100%;max-width:520px;background:var(--sf);border:1px solid var(--ln);border-radius:20px;padding:18px;max-height:85vh;overflow:auto;margin-bottom:env(safe-area-inset-bottom,0px);animation:in .2s var(--ease)}
 .sheet h2{margin:0 0 10px;font:500 21px var(--fd)}
 .sheet p{margin:0 0 14px}
-.toast{position:fixed;bottom:calc(84px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 12px 10px 16px;border-radius:14px;display:flex;align-items:center;gap:12px;z-index:60;max-width:calc(100% - 32px);font-weight:600}
+.toast{position:fixed;bottom:calc(84px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 12px 10px 16px;border-radius:14px;display:flex;align-items:center;gap:12px;z-index:60;width:max-content;max-width:calc(100% - 32px);font-weight:600}
 .toast button{background:transparent;border:0;color:var(--bg);font-weight:800;text-decoration:underline;min-height:36px;padding:0 6px}
 .ob{text-align:center;padding:10px 4px}
 .ob svg{width:72px;height:72px;color:var(--acc)}
@@ -197,6 +197,33 @@ pre.diag{white-space:pre-wrap;word-break:break-word;font-size:12px;background:va
 .aboutlogo img{width:84px;height:84px;border-radius:22px}
 .aboutlogo b{font:500 28px var(--fd)}
 .disc{font-size:14px;color:var(--mut);border-inline-start:3px solid var(--acc);padding:4px 12px;margin:14px 0}
+#printRoot{display:none}
+.linkbtn{background:transparent;border:0;color:var(--acc);font-weight:700;text-decoration:underline;min-height:44px;padding:0 8px;margin:0 auto;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:10px 0}
+.chips button{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--acc);background:transparent;color:var(--acc);font-weight:700}
+.tpl{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--ln)}
+.tpl .n{flex:1;font-weight:700}.tpl small{display:block;color:var(--mut);font-weight:400}
+.tpladd{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 0}
+.tpladd input{min-height:44px;border-radius:10px;border:1px solid var(--ln);background:var(--sf2);padding:6px 10px;text-align:center;width:100%}
+.tpladd .full{grid-column:1/-1}
+.tpladd label{font-size:13px;color:var(--mut);display:grid;gap:4px}
+@media print{
+ @page{size:A4;margin:14mm}
+ html,body{background:#fff!important;color:#000!important}
+ .app,#modalRoot,#toastRoot,#fileWarn,.sumbar,.skip{display:none!important}
+ #printRoot{display:block!important;font:11pt/1.45 var(--f);color:#000}
+}
+#printRoot h1{font:500 22pt var(--fd);margin:0 0 2pt}
+#printRoot .meta{display:grid;grid-template-columns:auto 1fr;gap:2pt 14pt;margin:10pt 0 12pt;font-size:10.5pt}
+#printRoot .meta span:nth-child(odd){color:#555}
+#printRoot table{width:100%;border-collapse:collapse;font-size:10pt}
+#printRoot th{text-align:start;border-bottom:1.5pt solid #8A6A10;padding:4pt 5pt;font-weight:700}
+#printRoot td{border-bottom:.5pt solid #ccc;padding:4pt 5pt;font-variant-numeric:tabular-nums}
+#printRoot td.n,#printRoot th.n{text-align:end}
+#printRoot .sum{margin:12pt 0 0 auto;width:60%;font-size:10.5pt}
+#printRoot .sum div{display:flex;justify-content:space-between;padding:2pt 0;border-bottom:.5pt solid #ddd}
+#printRoot .sum .t{font-weight:700;border-bottom:1.5pt solid #8A6A10;font-size:12pt}
+#printRoot .foot{margin-top:18pt;font-size:8.5pt;color:#555}
 </style>
 </head>
 <body>
@@ -212,6 +239,8 @@ pre.diag{white-space:pre-wrap;word-break:break-word;font-size:12px;background:va
   <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 100 18c1.2 0 1.8-.9 1.8-1.8 0-1.2-1-1.6-1-2.6 0-1 .8-1.6 1.8-1.6H17a4 4 0 004-4C21 6.6 17 3 12 3z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor"/><circle cx="10.5" cy="7" r="1.3" fill="currentColor"/><circle cx="15" cy="7.5" r="1.3" fill="currentColor"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 11v6M12 7.5v.01" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
   <symbol id="i-in" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M14 4h5a2 2 0 012 2v12a2 2 0 01-2 2h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-out" viewBox="0 0 24 24"><path d="M16 17l5-5-5-5M21 12H9M10 4H5a2 2 0 00-2 2v12a2 2 0 002 2h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -250,6 +279,8 @@ pre.diag{white-space:pre-wrap;word-break:break-word;font-size:12px;background:va
  <div class="punch">
   <button class="btn pri big" id="btnPunch"></button>
   <button class="btn" id="btnPause" hidden></button>
+  <button class="btn" id="btnQuick" hidden></button>
+  <button class="linkbtn" id="btnFix" hidden></button>
  </div>
  <div class="stats">
   <div class="stat"><small data-t="today"></small><div class="v" id="stTodayH"></div><div class="v2" id="stTodayP"></div></div>
@@ -266,7 +297,7 @@ pre.diag{white-space:pre-wrap;word-break:break-word;font-size:12px;background:va
 
 <!-- SHIFTS -->
 <section class="screen" id="s-shifts">
- <div class="bar"><button class="backbtn" data-back><svg><use href="#i-back"/></svg><span data-t="back"></span></button><h1 data-t="shifts"></h1><button class="ib" data-go="add" data-ta="manualAdd"><svg><use href="#i-plus"/></svg></button></div>
+ <div class="bar"><button class="backbtn" data-back><svg><use href="#i-back"/></svg><span data-t="back"></span></button><h1 data-t="shifts"></h1><button class="ib" id="btnPdf" data-ta="pdfReport"><svg><use href="#i-print"/></svg></button><button class="ib" data-go="add" data-ta="manualAdd"><svg><use href="#i-plus"/></svg></button></div>
  <div class="phead">
   <button class="ib" id="pPrev" data-ta="prevP"><svg><use href="#i-back"/></svg></button>
   <div class="lbl" id="pLbl"></div>
@@ -327,6 +358,7 @@ pre.diag{white-space:pre-wrap;word-break:break-word;font-size:12px;background:va
 </section>
 
 </main>
+<div id="printRoot" aria-hidden="true"></div>
 <div id="modalRoot"></div>
 <div id="toastRoot" aria-live="assertive"></div>
 <script>
@@ -528,12 +560,37 @@ csvTitle:['דוח שעות','Hours report','Отчёт по часам','Informe
 exported:['הופק','Exported','Создано','Exportado','تم التصدير'],
 weekday:['יום','Day','День','Día','اليوم'],
 kind:['סוג','Type','Тип','Tipo','النوع'],
+fixStart:['תקן שעת כניסה','Fix start time','Исправить время начала','Corregir hora de entrada','تصحيح وقت البدء'],
+fixStartQ:['מתי נכנסת למשמרת?','When did you start this shift?','Когда вы начали смену?','¿A qué hora empezaste el turno?','متى بدأت هذه الوردية؟'],
+fixStartHint:['שעה מאוחרת מעכשיו תיחשב כאתמול','A time later than now counts as yesterday','Время позже текущего считается вчерашним','Una hora posterior a la actual cuenta como ayer','الوقت اللاحق للآن يُحتسب من الأمس'],
+startFixed:['שעת הכניסה עודכנה ל-{t}','Start time set to {t}','Время начала изменено на {t}','Entrada cambiada a las {t}','تم تعديل وقت البدء إلى {t}'],
+quickShifts:['משמרות מהירות','Quick shifts','Быстрые смены','Turnos rápidos','ورديات سريعة'],
+quickHint:['תבניות קבועות שמוסיפות משמרת בלחיצה אחת','Saved templates that add a shift in one tap','Шаблоны, которые добавляют смену одним нажатием','Plantillas que añaden un turno con un toque','قوالب محفوظة تضيف وردية بنقرة واحدة'],
+addTemplate:['הוסף תבנית','Add template','Добавить шаблон','Añadir plantilla','إضافة قالب'],
+tplName:['שם התבנית','Template name','Название шаблона','Nombre de la plantilla','اسم القالب'],
+tplDefault:['משמרת קבועה','Regular shift','Обычная смена','Turno habitual','وردية ثابتة'],
+noTemplates:['אין עדיין תבניות. מוסיפים אותן בהגדרות העבודה.','No templates yet. Add them in the job settings.','Шаблонов пока нет. Добавьте их в настройках работы.','Aún no hay plantillas. Añádelas en los ajustes del trabajo.','لا توجد قوالب بعد. أضفها من إعدادات العمل.'],
+toJobSettings:['להגדרות העבודה','Go to job settings','К настройкам работы','Ir a ajustes del trabajo','إلى إعدادات العمل'],
+quickAdded:['נוספה משמרת: {n}','Shift added: {n}','Смена добавлена: {n}','Turno añadido: {n}','تمت إضافة وردية: {n}'],
+removeTpl:['הסר תבנית','Remove template','Удалить шаблон','Quitar plantilla','إزالة القالب'],
+pdfReport:['דוח PDF של התקופה','PDF report for this period','PDF-отчёт за период','Informe PDF del periodo','تقرير PDF للفترة'],
+pdfHint:['בחלון ההדפסה בחר "שמור כ-PDF"','In the print window, choose "Save as PDF"','В окне печати выберите «Сохранить как PDF»','En la ventana de impresión elige «Guardar como PDF»','في نافذة الطباعة اختر "حفظ كملف PDF"'],
+reportTitle:['דוח שעות ושכר','Hours and pay report','Отчёт по часам и оплате','Informe de horas y salario','تقرير الساعات والأجر'],
+periodLbl:['תקופה','Period','Период','Periodo','الفترة'],
+employee:['שם העובד/ת','Employee','Сотрудник','Empleado/a','اسم الموظف'],
+notifShift:['התראה בזמן משמרת','Notification during a shift','Уведомление во время смены','Notificación durante el turno','إشعار أثناء الوردية'],
+notifHint:['מופיעה כשנכנסים למשמרת ונעלמת ביציאה. תזכורת מתוזמנת כשהאפליקציה סגורה אינה אפשרית בלי שרת.','Appears when you clock in and clears when you clock out. Timed reminders while the app is closed aren\'t possible without a server.','Появляется при начале смены и исчезает при её завершении. Напоминания по расписанию при закрытом приложении без сервера невозможны.','Aparece al fichar la entrada y desaparece al fichar la salida. Sin servidor no hay recordatorios programados con la app cerrada.','يظهر عند بدء الوردية ويختفي عند انتهائها. التذكيرات المجدولة والتطبيق مغلق غير ممكنة بدون خادم.'],
+notifDenied:['ההרשאה להתראות חסומה. אפשר לאשר אותה בהגדרות הדפדפן.','Notifications are blocked. You can allow them in your browser settings.','Уведомления заблокированы. Разрешите их в настройках браузера.','Las notificaciones están bloqueadas. Puedes permitirlas en los ajustes del navegador.','الإشعارات محظورة. يمكنك السماح بها من إعدادات المتصفح.'],
+notifNo:['המכשיר הזה לא תומך בהתראות','This device doesn\'t support notifications','Это устройство не поддерживает уведомления','Este dispositivo no admite notificaciones','هذا الجهاز لا يدعم الإشعارات'],
+autoHolidays:['זהה חגי ישראל אוטומטית','Detect Israeli holidays automatically','Автоматически определять праздники Израиля','Detectar festivos de Israel automáticamente','التعرّف على أعياد إسرائيل تلقائيًا'],
+autoHolidaysHint:['משמרת בחג תחושב בתעריף שבת/חג, מערב החג ועד צאתו, לפי שעות השבת שהוגדרו.','Shifts on a holiday are paid at the Shabbat/holiday rate, from the eve to its end, using the Shabbat hours you set.','Смены в праздник оплачиваются по ставке шаббата/праздника, от кануна до окончания, по заданным часам шаббата.','Los turnos en festivo se pagan como sabbat/festivo, desde la víspera hasta el final, según las horas de sabbat que definiste.','تُحسب ورديات العيد بأجر السبت/العيد من عشية العيد حتى نهايته حسب ساعات السبت المحددة.'],
+
 };
 </script>
 <script>
 /* WorkNest — core. Single file PWA, AppNest. Data stays on device (localStorage via shim). */
 'use strict';
-const VERSION='1.0.1';
+const VERSION='1.1.0';
 const SKEY='worknest_state_v1', EKEY='worknest_errors';
 const DAY_MS=86400000;
 
@@ -576,9 +633,9 @@ function defTypes(){return{
  night:{base:7,h1:2,p0:100,p1:125,p2:150,from:'22:00',to:'06:00'},
  shabbat:{base:8,h1:2,p0:150,p1:175,p2:200,fromDay:5,from:'16:00',toDay:6,to:'20:00'}}}
 function newJob(name){return{id:uid(),name:name||T('defaultJob'),color:'#D4AF37',wage:50,dayPayAuto:true,dayPay:400,fixedAdd:0,fixedDed:0,
- breakMin:0,breakAfter:6,travel:0,overtime:true,periodStart:1,types:defTypes(),absence:{holiday:100,vacation:100,sick:100,reserve:100}}}
+ breakMin:0,breakAfter:6,travel:0,overtime:true,periodStart:1,autoHolidays:true,templates:[],types:defTypes(),absence:{holiday:100,vacation:100,sick:100,reserve:100}}}
 function defState(){const guess=(navigator.language||'he').slice(0,2);const lang=LANGS.includes(guess)?guess:'he';
- const s={v:1,lang,theme:'gold',mode:'night',user:'',onboarded:false,lastBackup:0,jobs:[],cur:null,active:null,shifts:[]};return s}
+ const s={v:1,lang,theme:'gold',mode:'night',notif:false,user:'',onboarded:false,lastBackup:0,jobs:[],cur:null,active:null,shifts:[]};return s}
 let S=defState();
 function migrate(o){const d=defState();const s=Object.assign(d,o||{});
  if(!Array.isArray(s.jobs))s.jobs=[];if(!Array.isArray(s.shifts))s.shifts=[];
@@ -601,19 +658,31 @@ function purgeBin(){const lim=Date.now()-30*DAY_MS;S.shifts=S.shifts.filter(s=>!
 
 /* ---------- calculation engine ---------- */
 function dayPay(j){return j.dayPayAuto?r2(j.wage*j.types.morning.base):num(j.dayPay)}
-function shabbatOverlap(a,b,t){let sum=0;const[y,m,d]=dayParts(a);
- for(let i=-7;;i++){const dd=new Date(y,m,d+i);if(dd.getTime()>b)break;
-  if(dd.getDay()===+t.fromDay){const span=((+t.toDay-+t.fromDay)+7)%7;
-   const ws=atTime(dd.getFullYear(),dd.getMonth(),dd.getDate(),t.from);
-   const we=atTime(dd.getFullYear(),dd.getMonth(),dd.getDate()+span,t.to);
-   if(we>ws)sum+=ovl(a,b,ws,we)}}return sum}
+/* Israeli rest-day holidays via the browser's Hebrew calendar (Intl, no data files) */
+let HEBF=null;const hebCache={};
+function hebDate(y,m,d){const k=y+'-'+m+'-'+d;if(hebCache[k])return hebCache[k];
+ try{if(!HEBF)HEBF=new Intl.DateTimeFormat('en-u-ca-hebrew',{day:'numeric',month:'long'});const p=HEBF.formatToParts(new Date(y,m,d,12));
+  const r={day:+(p.find(x=>x.type==='day')||{}).value,month:String((p.find(x=>x.type==='month')||{}).value||'')};return hebCache[k]=r}catch(e){return hebCache[k]={day:0,month:''}}}
+function isHoliday(y,m,d){const h=hebDate(y,m,d);const mo=h.month,dd=h.day;
+ if(mo==='Tishri')return[1,2,10,15,22].includes(dd);
+ if(mo==='Nisan')return dd===15||dd===21;
+ if(mo==='Sivan')return dd===6;
+ if(mo==='Iyar'&&dd>=3&&dd<=6){const w5=new Date(y,m,d+(5-dd)).getDay();const off=w5===5?4:w5===6?3:w5===1?6:5;return dd===off}
+ return false}
+function specialOverlap(a,b,j){const t=j.types.shabbat;const iv=[];const[y,m,d]=dayParts(a);
+ for(let i=-7;;i++){const dd=new Date(y,m,d+i);if(dd.getTime()>b+DAY_MS)break;const Y=dd.getFullYear(),M=dd.getMonth(),D=dd.getDate();
+  if(dd.getDay()===+t.fromDay){const span=((+t.toDay-+t.fromDay)+7)%7;const ws=atTime(Y,M,D,t.from),we=atTime(Y,M,D+span,t.to);if(we>ws)iv.push([ws,we])}
+  if(j.autoHolidays!==false&&i>=-2&&isHoliday(Y,M,D)){const ws=atTime(Y,M,D-1,t.from),we=atTime(Y,M,D,t.to);if(we>ws)iv.push([ws,we])}}
+ iv.sort((p,q)=>p[0]-q[0]);let sum=0,cs=null,ce=null;
+ for(const[s,e]of iv){if(cs===null){cs=s;ce=e}else if(s<=ce){ce=Math.max(ce,e)}else{sum+=ovl(a,b,cs,ce);cs=s;ce=e}}
+ if(cs!==null)sum+=ovl(a,b,cs,ce);return sum}
 function nightOverlap(a,b,t){let sum=0;const[y,m,d]=dayParts(a);const cross=hm(t.to)<=hm(t.from);
  for(let i=-1;;i++){const dd=new Date(y,m,d+i);if(dd.getTime()>b)break;
   const ws=atTime(dd.getFullYear(),dd.getMonth(),dd.getDate(),t.from);
   const we=atTime(dd.getFullYear(),dd.getMonth(),dd.getDate()+(cross?1:0),t.to);
   sum+=ovl(a,b,ws,we)}return sum}
 function classify(a,b,j){const t=j.types,dur=b-a;if(dur<=0)return'morning';
- const so=shabbatOverlap(a,b,t.shabbat);if(so>0&&so>=dur/2)return'shabbat';
+ const so=specialOverlap(a,b,j);if(so>0&&so>=dur/2)return'shabbat';
  if(nightOverlap(a,b,t.night)>=120*60000)return'night';
  const d=new Date(a);if(d.getHours()*60+d.getMinutes()>=hm(t.afternoon.start))return'afternoon';
  return'morning'}
@@ -640,14 +709,55 @@ function summary(from,to,j){const list=shiftsIn(from,to,j.id);let min=0,gross=0;
 function activeElapsedMs(now){const a=S.active;if(!a)return 0;now=now||Date.now();
  let paused=a.pauses.reduce((x,p)=>x+(p[1]-p[0]),0);if(a.pausedAt)paused+=now-a.pausedAt;return Math.max(0,now-a.start-paused)}
 function activePauseMin(now){const a=S.active;if(!a)return 0;now=now||Date.now();let p=a.pauses.reduce((x,q)=>x+(q[1]-q[0]),0);if(a.pausedAt)p+=now-a.pausedAt;return p/60000}
-function clockIn(){if(S.active)return;S.active={jobId:S.cur,start:Date.now(),pauses:[],pausedAt:null};save();toast(T('clockedIn',{t:hhmm(S.active.start)}));vib(30);renderHome()}
+function clockIn(){if(S.active)return;S.active={jobId:S.cur,start:Date.now(),pauses:[],pausedAt:null};save();toast(T('clockedIn',{t:hhmm(S.active.start)}));vib(30);renderHome();syncNotif()}
 function clockOut(openEdit){const a=S.active;if(!a)return;const now=Date.now();if(a.pausedAt){a.pauses.push([a.pausedAt,now]);a.pausedAt=null}
  const sh={id:uid(),jobId:a.jobId,kind:'work',start:a.start,end:now,pauseMin:Math.round(a.pauses.reduce((x,p)=>x+(p[1]-p[0]),0)/60000),forceType:'auto',bonus:0,deduct:0,note:''};
- const snap=JSON.parse(JSON.stringify(a));S.shifts.push(sh);S.active=null;save();vib([30,60,30]);renderHome();
+ const snap=JSON.parse(JSON.stringify(a));S.shifts.push(sh);S.active=null;save();vib([30,60,30]);renderHome();syncNotif();
  const c=calc(sh);
  if(openEdit){openShiftEdit(sh.id);return}
- toast(T('clockedOut',{h:fmtH(c.min)}),T('undo'),()=>{S.shifts=S.shifts.filter(x=>x.id!==sh.id);S.active=snap;save();renderHome()})}
-function togglePause(){const a=S.active;if(!a)return;const now=Date.now();if(a.pausedAt){a.pauses.push([a.pausedAt,now]);a.pausedAt=null}else a.pausedAt=now;save();vib(20);renderHome()}
+ toast(T('clockedOut',{h:fmtH(c.min)}),T('undo'),()=>{S.shifts=S.shifts.filter(x=>x.id!==sh.id);S.active=snap;save();renderHome();syncNotif()})}
+function togglePause(){const a=S.active;if(!a)return;const now=Date.now();if(a.pausedAt){a.pauses.push([a.pausedAt,now]);a.pausedAt=null}else a.pausedAt=now;save();vib(20);renderHome();syncNotif()}
+/* fix start time of the running shift */
+function fixStart(){const a=S.active;if(!a)return;
+ openModal('<h2>'+esc(T('fixStartQ'))+'</h2><div class="fld"><label for="fsT">'+esc(T('start'))+'<small>'+esc(T('fixStartHint'))+'</small></label><input type="time" id="fsT" value="'+hhmm(a.start)+'"></div><div class="row2" style="margin-top:12px"><button class="btn ghost" id="fsNo">'+esc(T('cancel'))+'</button><button class="btn pri" id="fsOk">'+esc(T('ok'))+'</button></div>',sh=>{
+  sh.querySelector('#fsNo').onclick=closeModal;
+  sh.querySelector('#fsOk').onclick=()=>{const v=sh.querySelector('#fsT').value;if(!v)return;const now=new Date();const x=hm(v);
+   let st=new Date(now.getFullYear(),now.getMonth(),now.getDate(),Math.floor(x/60),x%60).getTime();if(st>now.getTime())st-=DAY_MS;
+   a.start=st;a.pauses=a.pauses.filter(p=>p[1]>st).map(p=>[Math.max(p[0],st),p[1]]);if(a.pausedAt&&a.pausedAt<st)a.pausedAt=st;
+   save();closeModal();toast(T('startFixed',{t:hhmm(st)}));renderHome();syncNotif()}})}
+/* quick shifts (templates) */
+function tplShift(tp,dateIso,jobId){const[y,m,d]=dateIso.split('-').map(Number);const a=hm(tp.st),b=hm(tp.en);
+ return{id:uid(),jobId,kind:'work',start:new Date(y,m-1,d,Math.floor(a/60),a%60).getTime(),end:new Date(y,m-1,d+(b<=a?1:0),Math.floor(b/60),b%60).getTime(),pauseMin:num(tp.pause),forceType:tp.type||'auto',bonus:0,deduct:0,note:''}}
+function quickSheet(){const j=job();const tps=j.templates||[];
+ if(!tps.length){openModal('<h2>'+esc(T('quickShifts'))+'</h2><p>'+esc(T('noTemplates'))+'</p><div class="row2"><button class="btn ghost" id="qX">'+esc(T('close'))+'</button><button class="btn pri" id="qGo">'+esc(T('toJobSettings'))+'</button></div>',sh=>{
+  sh.querySelector('#qX').onclick=closeModal;sh.querySelector('#qGo').onclick=()=>{closeModal();editJobId=j.id;go('job')}});return}
+ openModal('<h2>'+esc(T('quickShifts'))+'</h2><div class="fld"><label for="qD">'+esc(T('date'))+'</label><input type="date" id="qD" value="'+isoDate(Date.now())+'"></div><div class="stack" style="margin-top:10px">'+
+  tps.map(tp=>'<button class="jobcard" data-tp="'+tp.id+'"><svg style="width:22px;height:22px;color:var(--acc)"><use href="#i-bolt"/></svg><span class="n">'+esc(tp.name)+'<small><bdi dir="ltr">'+esc(tp.st+' – '+tp.en)+'</bdi></small></span></button>').join('')+
+  '</div><button class="btn ghost" id="qX">'+esc(T('close'))+'</button>',sh=>{sh.querySelector('#qX').onclick=closeModal;
+  sh.querySelectorAll('[data-tp]').forEach(b=>b.onclick=()=>{const tp=tps.find(x=>x.id===b.dataset.tp);const d=sh.querySelector('#qD').value||isoDate(Date.now());
+   const s=tplShift(tp,d,j.id);S.shifts.push(s);save();closeModal();renderHome();
+   toast(T('quickAdded',{n:tp.name}),T('undo'),()=>{S.shifts=S.shifts.filter(x=>x.id!==s.id);save();rerenderAll()})})})}
+/* notification while on shift (opt-in, honest: shown at clock-in, cleared at clock-out) */
+async function swReg(){try{return('serviceWorker' in navigator)?await navigator.serviceWorker.getRegistration():null}catch(e){return null}}
+async function syncNotif(){try{const reg=await swReg();const tag='worknest-active';
+ if(reg&&reg.getNotifications){(await reg.getNotifications({tag})).forEach(n=>n.close())}
+ if(!S.notif||!S.active||!('Notification' in window)||Notification.permission!=='granted')return;
+ const title='WorkNest — '+job(S.active.jobId).name;const body=S.active.pausedAt?T('onBreak'):T('atWork',{t:hhmm(S.active.start)});
+ const opt={body,tag,requireInteraction:true,silent:true,icon:'icon-192.png',badge:'icon-192.png',lang:S.lang,dir:(S.lang==='he'||S.lang==='ar')?'rtl':'ltr'};
+ if(reg)await reg.showNotification(title,opt);else new Notification(title,opt)}catch(e){logErr('notif: '+e.message)}}
+/* PDF report via the system print dialog (Save as PDF) — keeps Hebrew/Arabic text perfect */
+function printReport(){const j=job();const p=viewP&&viewP.jobId===j.id?viewP:periodOf(Date.now(),j);const pr=periodRange(p);const sm=summary(pr.from,pr.to,j);
+ const rtl=S.lang==='he'||S.lang==='ar';const per=fmtDay(pr.from,{day:'numeric',month:'numeric',year:'numeric'})+' – '+fmtDay(pr.to-1,{day:'numeric',month:'numeric',year:'numeric'});
+ let rows='';sm.list.forEach(s=>{const c=calc(s,j);const w=s.kind==='work';rows+='<tr><td>'+esc(fmtDay(s.start,{weekday:'short',day:'numeric',month:'numeric'}))+'</td><td>'+esc(w?T('t_'+c.type):T('k_'+s.kind))+'</td><td>'+(w?hhmm(s.start):'')+'</td><td>'+(w?hhmm(s.end):'')+'</td><td class="n">'+(w?fmtH(c.min):'')+'</td><td class="n">'+esc(money(c.pay))+'</td><td>'+esc(s.note||'')+'</td></tr>'});
+ const R=$('#printRoot');R.setAttribute('dir',rtl?'rtl':'ltr');R.setAttribute('lang',S.lang);
+ R.innerHTML='<h1>'+esc(T('reportTitle'))+'</h1><div style="color:#555">WorkNest</div><div class="meta"><span>'+esc(T('employee'))+'</span><span>'+esc(S.user||'—')+'</span><span>'+esc(T('jobName'))+'</span><span>'+esc(j.name)+'</span><span>'+esc(T('periodLbl'))+'</span><span>'+esc(per)+'</span><span>'+esc(T('exported'))+'</span><span>'+esc(fmtDay(Date.now(),{dateStyle:'short',timeStyle:'short'}))+'</span></div>'+
+ '<table><thead><tr><th>'+esc(T('date'))+'</th><th>'+esc(T('kind'))+'</th><th>'+esc(T('inLbl'))+'</th><th>'+esc(T('outLbl'))+'</th><th class="n">'+esc(T('hours'))+'</th><th class="n">'+esc(T('pay'))+'</th><th>'+esc(T('note'))+'</th></tr></thead><tbody>'+(rows||'<tr><td colspan="7">'+esc(T('noShifts'))+'</td></tr>')+'</tbody></table>'+
+ '<div class="sum"><div><span>'+esc(T('reports'))+'</span><span>'+sm.n+'</span></div><div><span>'+esc(T('hours'))+'</span><span>'+fmtH(sm.min)+'</span></div><div><span>'+esc(T('gross'))+'</span><span>'+esc(money(sm.gross))+'</span></div>'+
+ (sm.fixedAdd?'<div><span>'+esc(T('fixedAdd'))+'</span><span>+'+esc(money(sm.fixedAdd))+'</span></div>':'')+(sm.fixedDed?'<div><span>'+esc(T('fixedDed'))+'</span><span>−'+esc(money(sm.fixedDed))+'</span></div>':'')+
+ '<div class="t"><span>'+esc(T('total'))+'</span><span>'+esc(money(sm.total))+'</span></div></div><p class="foot">'+esc(T('disclaimer'))+'<br>WorkNest v'+VERSION+' · AppNest</p>';
+ const old=document.title;document.title='WorkNest-'+j.name+'-'+isoDate(pr.from);toast(T('pdfHint'));
+ const done=()=>{document.title=old;R.innerHTML='';window.removeEventListener('afterprint',done)};window.addEventListener('afterprint',done);
+ setTimeout(()=>{try{window.print()}catch(e){logErr('print: '+e.message)}},300)}
 function vib(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
 
 /* ---------- theme / lang ---------- */
@@ -712,6 +822,7 @@ function renderHome(){const j=job(S.cur);const a=S.active;const aj=a?job(a.jobId
  bp.innerHTML='<svg><use href="#i-'+(a?'out':'in')+'"/></svg><span>'+esc(T(a?'clockOut':'clockIn'))+'</span>';
  bp.classList.toggle('pri',true);
  bz.hidden=!a;if(a)bz.innerHTML='<svg><use href="#i-cup"/></svg><span>'+esc(T(a.pausedAt?'resume':'pause'))+'</span>';
+ const bq=$('#btnQuick'),bf=$('#btnFix');bq.hidden=!!a;bq.innerHTML='<svg><use href="#i-bolt"/></svg><span>'+esc(T('quickShifts'))+'</span>';bf.hidden=!a;bf.textContent=T('fixStart');
  updateStats()}
 function updateStats(){const a=S.active;const aj=a?job(a.jobId):job(S.cur);
  const now=Date.now();const[y,m,d]=dayParts(now);const t0=new Date(y,m,d).getTime();
@@ -801,7 +912,8 @@ function renderAdd(){if(!ED)startNewShift();$('#addTitle').textContent=T(ED.id?'
  const kinds=['work','holiday','vacation','sick','reserve'];
  let h='<div class="card"><div class="seg" role="group" aria-label="'+esc(T('kind'))+'">'+kinds.map(k=>'<button data-kind="'+k+'" aria-pressed="'+(ED.kind===k)+'">'+esc(T('k_'+k))+'</button>').join('')+'</div>'+
   '<div class="fld"><label for="eDate">'+esc(T('date'))+'</label><input type="date" id="eDate" value="'+esc(ED.date)+'"></div>';
- if(ED.kind==='work'){const t=edTimes();
+ if(ED.kind==='work'){const t=edTimes();const tps=(j.templates||[]);
+  if(tps.length)h+='<div class="chips" role="group" aria-label="'+esc(T('quickShifts'))+'">'+tps.map(tp=>'<button data-tpl="'+tp.id+'">'+esc(tp.name)+'</button>').join('')+'</div>';
   h+='<div class="fld"><label for="eSt">'+esc(T('start'))+'</label><input type="time" id="eSt" value="'+esc(ED.st)+'"></div>'+
    '<div class="fld"><label for="eEn">'+esc(T('end'))+'<small id="eNext">'+(t.next?esc(T('nextDayNote')):'')+'</small></label><input type="time" id="eEn" value="'+esc(ED.en)+'"></div>'+
    '<div class="fld"><label for="eP24">'+esc(T('plus24'))+'</label><span class="sw"><input type="checkbox" id="eP24" '+(ED.p24?'checked':'')+'><span></span></span></div>'+
@@ -816,6 +928,7 @@ function renderAdd(){if(!ED)startNewShift();$('#addTitle').textContent=T(ED.id?'
  $('#addForm').innerHTML=h;
  const F=$('#addForm');
  F.querySelectorAll('[data-kind]').forEach(b=>b.onclick=()=>{ED.kind=b.dataset.kind;renderAdd()});
+ F.querySelectorAll('[data-tpl]').forEach(b=>b.onclick=()=>{const tp=(j.templates||[]).find(x=>x.id===b.dataset.tpl);if(!tp)return;Object.assign(ED,{st:tp.st,en:tp.en,pause:num(tp.pause),type:tp.type||'auto',p24:false});renderAdd()});
  const bind=(id,key,ev)=>{const e=F.querySelector('#'+id);if(e)e.addEventListener(ev||'input',()=>{ED[key]=e.type==='checkbox'?e.checked:e.value;edPreview()})};
  bind('eDate','date');bind('eSt','st');bind('eEn','en');bind('eP24','p24','change');bind('ePause','pause');bind('eType','type','change');bind('eBonus','bonus');bind('eDed','deduct');bind('eNote','note');
  $('#eSave').onclick=()=>saveShift(false);
@@ -859,7 +972,9 @@ function renderJob(){const j=S.jobs.find(x=>x.id===editJobId)||job();editJobId=j
  '<details class="tblock"><summary><span class="dot" style="background:'+typeColor('morning')+'"></span>'+esc(T('t_morning'))+'</summary><div class="body">'+tierBlock('morning',t.morning)+'</div></details>'+
  '<details class="tblock"><summary><span class="dot" style="background:'+typeColor('afternoon')+'"></span>'+esc(T('t_afternoon'))+'</summary><div class="body">'+nf(T('afternoonStart'),'types.afternoon.start',t.afternoon.start,{type:'time'})+tierBlock('afternoon',t.afternoon)+'</div></details>'+
  '<details class="tblock"><summary><span class="dot" style="background:'+typeColor('night')+'"></span>'+esc(T('t_night'))+'</summary><div class="body"><p class="note">'+esc(T('nightHint'))+'</p>'+nf(T('nightFrom'),'types.night.from',t.night.from,{type:'time'})+nf(T('nightTo'),'types.night.to',t.night.to,{type:'time'})+tierBlock('night',t.night)+'</div></details>'+
- '<details class="tblock"><summary><span class="dot" style="background:'+typeColor('shabbat')+'"></span>'+esc(T('t_shabbat'))+'</summary><div class="body"><p class="note">'+esc(T('shabbatHint'))+'</p>'+daySel(T('shabbatFrom'),'types.shabbat.fromDay',t.shabbat.fromDay)+nf(T('shabbatFrom'),'types.shabbat.from',t.shabbat.from,{type:'time'})+daySel(T('shabbatTo'),'types.shabbat.toDay',t.shabbat.toDay)+nf(T('shabbatTo'),'types.shabbat.to',t.shabbat.to,{type:'time'})+tierBlock('shabbat',t.shabbat)+'</div></details></div>'+
+ '<details class="tblock"><summary><span class="dot" style="background:'+typeColor('shabbat')+'"></span>'+esc(T('t_shabbat'))+'</summary><div class="body"><p class="note">'+esc(T('shabbatHint'))+'</p>'+sw(T('autoHolidays'),'autoHolidays',j.autoHolidays!==false)+'<p class="note">'+esc(T('autoHolidaysHint'))+'</p>'+daySel(T('shabbatFrom'),'types.shabbat.fromDay',t.shabbat.fromDay)+nf(T('shabbatFrom'),'types.shabbat.from',t.shabbat.from,{type:'time'})+daySel(T('shabbatTo'),'types.shabbat.toDay',t.shabbat.toDay)+nf(T('shabbatTo'),'types.shabbat.to',t.shabbat.to,{type:'time'})+tierBlock('shabbat',t.shabbat)+'</div></details></div>'+
+ '<div class="card"><h2>'+esc(T('quickShifts'))+'</h2><p class="note">'+esc(T('quickHint'))+'</p><div id="tplList"></div>'+
+ '<div class="tpladd"><label class="full">'+esc(T('tplName'))+'<input type="text" id="tN" maxlength="30" placeholder="'+esc(T('tplDefault'))+'"></label><label>'+esc(T('start'))+'<input type="time" id="tS" value="08:00"></label><label>'+esc(T('end'))+'<input type="time" id="tE" value="17:00"></label><label class="full">'+esc(T('pauseMin'))+'<input type="number" inputmode="numeric" min="0" id="tP" value="0"></label><button class="btn full" id="tAdd"><svg><use href="#i-plus"/></svg>'+esc(T('addTemplate'))+'</button></div></div>'+
  '<div class="card"><h2>'+esc(T('absencePay'))+'</h2>'+['holiday','vacation','sick','reserve'].map(k=>nf(T('k_'+k)+' %','absence.'+k,j.absence[k])).join('')+'</div>'+
  '<button class="btn dng" id="jDel">'+esc(T('deleteJob'))+'</button>';
  const F=$('#jobForm');F.innerHTML=h;
@@ -871,6 +986,11 @@ function renderJob(){const j=S.jobs.find(x=>x.id===editJobId)||job();editJobId=j
   if(k==='name'&&!o[k].trim())o[k]=T('defaultJob');
   save();if(e.type==='checkbox'&&k==='dayPayAuto')renderJob();
   if(k==='wage'||path[0]==='types'){const dp=F.querySelector('#jf_dayPay');if(dp&&j.dayPayAuto)dp.value=dayPay(j)}})});
+ if(!j.templates)j.templates=[];
+ const drawTpl=()=>{$('#tplList').innerHTML=j.templates.map(tp=>'<div class="tpl"><span class="n">'+esc(tp.name)+'<small><bdi dir="ltr">'+esc(tp.st+' – '+tp.en)+'</bdi>'+(num(tp.pause)?' · '+num(tp.pause)+"'":'')+'</small></span><button class="ib" data-rt="'+tp.id+'" aria-label="'+esc(T('removeTpl'))+'" title="'+esc(T('removeTpl'))+'"><svg><use href="#i-bin"/></svg></button></div>').join('');
+  $('#tplList').querySelectorAll('[data-rt]').forEach(b=>b.onclick=()=>{j.templates=j.templates.filter(x=>x.id!==b.dataset.rt);save();drawTpl()})};drawTpl();
+ $('#tAdd').onclick=()=>{const st=$('#tS').value,en=$('#tE').value;if(!st||!en)return;if(st===en){toast(T('sameTime'));return}
+  j.templates.push({id:uid(),name:($('#tN').value.trim()||T('tplDefault')).slice(0,30),st,en,pause:Math.max(0,num($('#tP').value)),type:'auto'});save();$('#tN').value='';drawTpl()};
  $('#jDel').onclick=async()=>{if(S.jobs.length<2){toast(T('lastJob'));return}
   if(!await ask(T('deleteJobQ',{n:j.name}),T('del'),true))return;if(!await ask(T('deleteJobQ2'),T('del'),true))return;
   S.shifts=S.shifts.filter(s=>s.jobId!==j.id);if(S.active&&S.active.jobId===j.id)S.active=null;S.jobs=S.jobs.filter(x=>x.id!==j.id);
@@ -882,9 +1002,11 @@ function renderSettings(){const lb=S.lastBackup?fmtDay(S.lastBackup,{day:'numeri
  let h='<div class="card"><div class="fld col"><label for="sName">'+esc(T('userName'))+'<small>'+esc(T('userNameHint'))+'</small></label><input type="text" id="sName" maxlength="40" value="'+esc(S.user)+'" style="width:100%;min-height:46px;border-radius:10px;border:1px solid var(--ln);background:var(--sf2);padding:6px 12px"></div>'+
  '<div class="fld"><label for="sLang">'+esc(T('language'))+'</label><select id="sLang">'+LANGS.map((l,i)=>'<option value="'+l+'"'+(S.lang===l?' selected':'')+'>'+LANG_NAMES[i]+'</option>').join('')+'</select></div></div>'+
  '<div class="card"><h2>'+esc(T('theme'))+'</h2>'+themeControls()+'</div>'+
+ '<div class="card"><div class="fld"><label for="sNotif">'+esc(T('notifShift'))+'<small>'+esc(T('notifHint'))+'</small></label><span class="sw"><input type="checkbox" id="sNotif" '+(S.notif?'checked':'')+'><span></span></span></div></div>'+
  '<div class="card"><h2>'+esc(T('backup'))+'</h2><p class="note">'+esc(T('lastBackup',{d:lb}))+'</p>'+
   '<button class="linkrow" id="sExp"><svg><use href="#i-save"/></svg>'+esc(T('exportJson'))+'</button>'+
   '<button class="linkrow" id="sImp"><svg><use href="#i-upload"/></svg>'+esc(T('importJson'))+'</button><input type="file" id="sFile" accept=".json,application/json" hidden>'+
+  '<button class="linkrow" id="sPdf"><svg><use href="#i-print"/></svg>'+esc(T('pdfReport'))+'</button>'+
   '<button class="linkrow" id="sCsv"><svg><use href="#i-table"/></svg>'+esc(T('exportCsv'))+'</button>'+
   '<button class="linkrow" data-go="bin"><svg><use href="#i-bin"/></svg>'+esc(T('recycleBin'))+'</button></div>'+
  '<div class="card"><button class="linkrow" id="sTour"><svg><use href="#i-flag"/></svg>'+esc(T('tour'))+'</button>'+
@@ -896,7 +1018,12 @@ function renderSettings(){const lb=S.lastBackup?fmtDay(S.lastBackup,{day:'numeri
  $('#sName').addEventListener('input',e=>{S.user=e.target.value;save()});
  $('#sLang').onchange=e=>{S.lang=e.target.value;save();rerenderAll()};
  $('#sExp').onclick=exportJSON;$('#sImp').onclick=()=>$('#sFile').click();$('#sFile').onchange=importJSON;$('#sCsv').onclick=exportCSV;
- $('#sTour').onclick=()=>onboarding(0);
+ $('#sTour').onclick=()=>onboarding(0);$('#sPdf').onclick=printReport;
+ $('#sNotif').onchange=async e=>{const cb=e.target;if(!cb.checked){S.notif=false;save();syncNotif();return}
+  if(!('Notification' in window)){cb.checked=false;toast(T('notifNo'));return}
+  let perm=Notification.permission;if(perm==='default'){try{perm=await Notification.requestPermission()}catch(x){perm='denied'}}
+  if(perm!=='granted'){cb.checked=false;S.notif=false;save();toast(T('notifDenied'));return}
+  S.notif=true;save();syncNotif()};
  $('#sReset').onclick=async()=>{if(!await ask(T('resetQ1'),T('del'),true))return;if(!await ask(T('resetQ2'),T('del'),true))return;
   store.del(SKEY);store.del(EKEY);S=defState();load();save();screenStack.length=1;go('home',true);rerenderAll();onboarding(0)}}
 
@@ -971,13 +1098,13 @@ function init(){load();applyLook();applyLang();bindGo(document);
  document.querySelectorAll('[data-back]').forEach(b=>b.onclick=goBack);
  $('#btnPunch').onclick=()=>S.active?clockOut(false):clockIn();
  $('#btnPause').onclick=togglePause;$('#jobChip').onclick=pickJob;$('#btnMode').onclick=()=>{S.mode=S.mode==='day'?'night':'day';save();applyLook()};$('#btnAbout').onclick=()=>go('about');
- $('#btnNewJob').onclick=addJob;
+ $('#btnNewJob').onclick=addJob;$('#btnQuick').onclick=quickSheet;$('#btnFix').onclick=fixStart;$('#btnPdf').onclick=printReport;
  $('#pPrev').onclick=()=>{viewP.m--;if(viewP.m<0){viewP.m=11;viewP.y--}renderShifts()};
  $('#pNext').onclick=()=>{viewP.m++;if(viewP.m>11){viewP.m=0;viewP.y++}renderShifts()};
  try{history.replaceState({s:'home'},'')}catch(e){}
  if(location.protocol==='file:')$('#fileWarn').innerHTML='<div class="banner warn" style="margin:10px 16px"><p style="margin:0">'+esc(T('fileWarn'))+'</p></div>';
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderHome()});
- renderHome();save();
+ renderHome();save();syncNotif();
  if(!S.onboarded)onboarding(0);
  if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(e=>logErr('sw: '+e.message))}
 init();
