@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" data-theme="gold" data-mode="night">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>WorkNest — מעקב שעות העבודה שלי</title>
+<meta name="description" content="WorkNest: מעקב שעות, משמרות ושכר. בלי פרסומות, הכול נשמר במכשיר.">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="WorkNest">
+<meta property="og:description" content="מעקב שעות העבודה שלי, בלי פרסומות">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Frank+Ruhl+Libre:wght@300;500&display=swap" rel="stylesheet">
+<style>
+:root{--acc:#D4AF37;--acc2:#F1DC94;--bg:#000;--sf:#0d0d0d;--sf2:#161616;--ln:#2b2a26;--tx:#f3efe4;--mut:#958f80;--dng:#e0675f;--ok:#62c18e;
+--f:'Assistant',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;--fd:'Frank Ruhl Libre',Georgia,'Times New Roman',serif;--ease:cubic-bezier(.2,.7,.2,1)}
+[data-mode="day"]{--bg:#f1f1ee;--sf:#ffffff;--sf2:#e8e7e2;--ln:#d3d0c7;--tx:#171717;--mut:#66625a}
+[data-theme="gold"]{--acc:#D4AF37;--acc2:#F1DC94}
+[data-theme="silver"]{--acc:#C3CBD3;--acc2:#EEF2F6}
+[data-theme="copper"]{--acc:#CF7F4F;--acc2:#F2B792}
+[data-theme="emerald"]{--acc:#3FB68B;--acc2:#A1E4C9}
+[data-theme="sapphire"]{--acc:#6F98F0;--acc2:#BACFFA}
+[data-mode="day"][data-theme="gold"]{--acc:#8A6A10;--acc2:#C29A2E}
+[data-mode="day"][data-theme="silver"]{--acc:#4B5763;--acc2:#8593A1}
+[data-mode="day"][data-theme="copper"]{--acc:#974B1F;--acc2:#C9794A}
+[data-mode="day"][data-theme="emerald"]{--acc:#1B7554;--acc2:#3DA67D}
+[data-mode="day"][data-theme="sapphire"]{--acc:#2853B3;--acc2:#5C84D8}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+:root{color-scheme:dark}[data-mode="day"]{color-scheme:light}
+html{height:100%;-webkit-text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--tx);font:17px/1.5 var(--f);-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.skip{position:absolute;inset-inline-start:-999px;top:0;background:var(--acc);color:#000;padding:8px 12px;z-index:99}
+.skip:focus{inset-inline-start:8px}
+.app{max-width:560px;margin:0 auto;padding:0 16px 96px;min-height:100vh}
+.screen{display:none}
+.screen.on{display:block;animation:in .22s var(--ease)}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* top bars */
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 0 6px}
+.bar{display:flex;align-items:center;gap:12px;padding:14px 0 10px;position:sticky;top:0;background:var(--bg);z-index:5}
+.bar h1{margin:0;font:500 24px/1.2 var(--fd);flex:1}
+.backbtn{display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 16px;border:1.5px solid var(--acc);border-radius:999px;background:transparent;font-weight:700;color:var(--acc)}
+.backbtn svg{width:18px;height:18px}
+[dir="rtl"] .backbtn svg{transform:scaleX(-1)}
+.ib{width:46px;height:46px;border-radius:50%;border:1px solid var(--ln);background:var(--sf);display:inline-grid;place-items:center;color:var(--tx)}
+.ib svg{width:22px;height:22px}
+.topacts{display:flex;gap:8px}
+.jobchip{display:inline-flex;align-items:center;gap:10px;min-height:46px;max-width:65%;padding:0 16px;border:1px solid var(--ln);background:var(--sf);border-radius:999px;font-weight:700}
+.jobchip span.n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jobchip svg{width:16px;height:16px;flex:none;color:var(--mut)}
+.dot{width:12px;height:12px;border-radius:50%;flex:none;display:inline-block}
+.brand{font:500 15px var(--fd);color:var(--mut);text-align:center;margin:2px 0 0;letter-spacing:.02em}
+.brand b{color:var(--acc);font-weight:500}
+/* dial */
+.dialwrap{position:relative;width:min(84vw,340px);aspect-ratio:1;margin:12px auto 4px}
+#dial{width:100%;height:100%;display:block;overflow:visible}
+.dialc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;padding:0 18%}
+.dlbl{font-size:15px;color:var(--mut);font-weight:600}
+.dlbl.live{color:var(--acc)}
+.dbig{font:300 clamp(46px,15vw,64px)/1.05 var(--fd);font-variant-numeric:tabular-nums;letter-spacing:.01em;direction:ltr}
+.dsub{font-size:15px;color:var(--mut);min-height:22px}
+.dsub b{color:var(--tx)}
+.tick{stroke:var(--ln)}
+.tick.big{stroke:var(--mut)}
+.ring{fill:none;stroke:var(--ln);stroke-width:1}
+.arc{fill:none;stroke-linecap:round;stroke-width:9}
+.arc.b{stroke:var(--acc)}
+.arc.o{stroke:var(--acc2)}
+.hand{fill:var(--acc)}
+.num{fill:var(--mut);font:300 15px var(--fd);text-anchor:middle;dominant-baseline:central}
+/* buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 20px;border-radius:14px;border:1.5px solid var(--acc);background:transparent;color:var(--acc);font-weight:700;font-size:17px;width:100%}
+.btn.pri{background:var(--acc);color:#000}
+[data-mode="day"] .btn.pri{color:#fff}
+.btn.big{min-height:64px;font-size:20px;border-radius:18px}
+.btn.dng{border-color:var(--dng);color:var(--dng)}
+.btn.ghost{border-color:var(--ln);color:var(--tx)}
+.btn:disabled{opacity:.45}
+.btn svg{width:20px;height:20px}
+.punch{display:grid;gap:10px;margin:14px 0 0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* stats */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.stat{border:1px solid var(--ln);border-radius:14px;padding:12px 14px;background:var(--sf)}
+.stat small{display:block;color:var(--mut);font-size:14px}
+.stat .v{font:500 22px/1.2 var(--fd);font-variant-numeric:tabular-nums}
+.stat .v2{color:var(--acc);font-weight:700;font-size:15px}
+.homenav{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.navbtn{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:84px;padding:14px;border-radius:16px;border:1px solid var(--ln);background:var(--sf);text-align:start;font-weight:700}
+.navbtn svg{width:24px;height:24px;color:var(--acc)}
+.badge{margin:28px 0 8px;text-align:center;color:var(--mut);font-size:13px}
+.badge a{color:var(--acc);text-decoration:none}
+/* banners */
+.banner{border:1px solid var(--acc);border-radius:14px;padding:12px 14px;margin:10px 0;background:var(--sf)}
+.banner.warn{border-color:var(--dng)}
+.banner p{margin:0 0 10px}
+/* period header */
+.phead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 12px}
+.phead .lbl{font:500 20px var(--fd);text-align:center;flex:1}
+/* shift list */
+.list{display:grid;gap:8px}
+.shift{border:1px solid var(--ln);border-radius:14px;background:var(--sf);overflow:hidden}
+.shift>button{display:grid;grid-template-columns:4px 1fr auto;gap:12px;align-items:center;width:100%;padding:12px 14px 12px 12px;border:0;background:transparent;text-align:start}
+.shift .stripe{align-self:stretch;border-radius:4px}
+.shift .d{font-weight:700}
+.shift .t{color:var(--mut);font-size:15px;direction:ltr;unicode-bidi:isolate}
+.shift .p{text-align:end;font-variant-numeric:tabular-nums}
+.shift .p b{display:block;font:500 18px var(--fd)}
+.shift .p span{color:var(--mut);font-size:14px}
+.shift .more{padding:0 14px 14px;border-top:1px dashed var(--ln);display:none}
+.shift.open .more{display:block}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:6px 0;font-size:15px}
+.kv span:first-child{color:var(--mut)}
+.tag{display:inline-block;font-size:13px;padding:1px 8px;border-radius:999px;border:1px solid var(--ln);color:var(--mut);margin-inline-start:6px;font-weight:600}
+.empty{text-align:center;padding:40px 14px;color:var(--mut)}
+.empty b{display:block;color:var(--tx);font:500 20px var(--fd);margin-bottom:6px}
+.sumbar{position:fixed;bottom:0;left:0;right:0;background:var(--sf);border-top:1px solid var(--acc);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));z-index:6}
+.sumbar .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:8px;text-align:center}
+.sumbar small{display:block;color:var(--mut);font-size:13px}
+.sumbar b{font:500 18px var(--fd);font-variant-numeric:tabular-nums}
+.sumbar .tot b{color:var(--acc)}
+.sumdetail{border:1px solid var(--ln);border-radius:14px;padding:6px 14px;margin:14px 0;background:var(--sf)}
+/* forms */
+.card{border:1px solid var(--ln);border-radius:16px;padding:4px 14px;margin:0 0 14px;background:var(--sf)}
+.card h2{font:500 18px var(--fd);margin:12px 0 4px;color:var(--acc)}
+.fld{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--ln)}
+.fld:last-child{border-bottom:0}
+.fld label,.fld .lb{flex:1;font-weight:600}
+.fld small{display:block;color:var(--mut);font-weight:400;font-size:13px}
+.fld input[type=number],.fld input[type=text],.fld input[type=time],.fld input[type=date],.fld select{width:130px;min-height:44px;padding:6px 10px;border-radius:10px;border:1px solid var(--ln);background:var(--sf2);text-align:center}
+.fld input[type=time],.fld input[type=date]{width:158px}
+.fld input[type=text].wide{width:100%}
+.fld.col{flex-direction:column;align-items:stretch}
+.fld textarea{width:100%;min-height:64px;border-radius:10px;border:1px solid var(--ln);background:var(--sf2);padding:8px 10px}
+input[type=number]{direction:ltr}
+.sw{position:relative;width:52px;height:30px;flex:none}
+.sw input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:1}
+.sw span{position:absolute;inset:0;pointer-events:none;border-radius:999px;background:var(--sf2);border:1px solid var(--ln);transition:.2s}
+.sw span::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:22px;height:22px;border-radius:50%;background:var(--mut);transition:.2s}
+.sw input:checked+span{background:var(--acc);border-color:var(--acc)}
+.sw input:checked+span::after{background:#fff;inset-inline-start:25px}
+.sw input:focus-visible+span{outline:2px solid var(--acc);outline-offset:2px}
+.seg{display:flex;flex-wrap:wrap;gap:6px;padding:10px 0}
+.seg button{flex:1 1 auto;min-height:42px;padding:0 12px;border-radius:999px;border:1px solid var(--ln);background:var(--sf2);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#000}
+[data-mode="day"] .seg button[aria-pressed="true"]{color:#fff}
+.swatches{display:flex;flex-wrap:wrap;gap:10px;padding:10px 0}
+.swatches button{width:38px;height:38px;border-radius:50%;border:2px solid transparent}
+.swatches button[aria-pressed="true"]{border-color:var(--tx);box-shadow:0 0 0 2px var(--bg) inset}
+.tblock{border:1px solid var(--ln);border-radius:12px;margin:10px 0;overflow:hidden}
+.tblock summary{list-style:none;padding:12px;font-weight:700;display:flex;align-items:center;gap:10px;cursor:pointer}
+.tblock summary::-webkit-details-marker{display:none}
+.tblock summary::after{content:"+";margin-inline-start:auto;color:var(--acc);font-size:22px;line-height:1}
+.tblock[open] summary::after{content:"−"}
+.tblock .body{padding:0 12px 6px}
+.note{color:var(--mut);font-size:14px;margin:6px 0 10px}
+.preview{display:flex;justify-content:space-between;gap:10px;align-items:baseline;border:1px solid var(--acc);border-radius:14px;padding:12px 14px;margin:0 0 14px;background:var(--sf)}
+.preview b{font:500 24px var(--fd);color:var(--acc)}
+.stack{display:grid;gap:10px;margin:0 0 14px}
+.jobcard{display:flex;align-items:center;gap:12px;width:100%;padding:14px;border:1px solid var(--ln);border-radius:14px;background:var(--sf);text-align:start}
+.jobcard .n{font-weight:700;flex:1}
+.jobcard small{display:block;color:var(--mut)}
+.jobcard.act{border-color:var(--acc)}
+.linkrow{display:flex;align-items:center;gap:12px;width:100%;min-height:54px;padding:0 4px;border:0;border-bottom:1px solid var(--ln);background:transparent;text-align:start;font-weight:600;text-decoration:none;color:var(--tx)}
+.linkrow:last-child{border-bottom:0}
+.linkrow svg{width:20px;height:20px;color:var(--acc);flex:none}
+.linkrow.dng{color:var(--dng)}
+.linkrow.dng svg{color:var(--dng)}
+.saved{font-size:13px;color:var(--mut);text-align:center;margin:0 0 10px}
+/* modal & toast */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:50;padding:16px}
+.sheet{width:100%;max-width:520px;background:var(--sf);border:1px solid var(--ln);border-radius:20px;padding:18px;max-height:85vh;overflow:auto;margin-bottom:env(safe-area-inset-bottom,0px);animation:in .2s var(--ease)}
+.sheet h2{margin:0 0 10px;font:500 21px var(--fd)}
+.sheet p{margin:0 0 14px}
+.toast{position:fixed;bottom:calc(84px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 12px 10px 16px;border-radius:14px;display:flex;align-items:center;gap:12px;z-index:60;max-width:calc(100% - 32px);font-weight:600}
+.toast button{background:transparent;border:0;color:var(--bg);font-weight:800;text-decoration:underline;min-height:36px;padding:0 6px}
+.ob{text-align:center;padding:10px 4px}
+.ob svg{width:72px;height:72px;color:var(--acc)}
+.ob h2{font:500 26px var(--fd);margin:12px 0 8px}
+.dots{display:flex;gap:6px;justify-content:center;margin:14px 0}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--ln)}
+.dots i.on{background:var(--acc)}
+pre.diag{white-space:pre-wrap;word-break:break-word;font-size:12px;background:var(--sf2);padding:10px;border-radius:10px;direction:ltr;text-align:left;max-height:220px;overflow:auto}
+.dgrow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--ln);font-size:15px}
+.dgrow span:last-child{color:var(--mut);text-align:end;direction:ltr;unicode-bidi:isolate}
+.aboutlogo{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 0 18px}
+.aboutlogo img{width:84px;height:84px;border-radius:22px}
+.aboutlogo b{font:500 28px var(--fd)}
+.disc{font-size:14px;color:var(--mut);border-inline-start:3px solid var(--acc);padding:4px 12px;margin:14px 0}
+</style>
+</head>
+<body>
+<a href="#main" class="skip" data-t="skipLink">דלג לתוכן</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-brief" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M3 13h18" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 100 18c1.2 0 1.8-.9 1.8-1.8 0-1.2-1-1.6-1-2.6 0-1 .8-1.6 1.8-1.6H17a4 4 0 004-4C21 6.6 17 3 12 3z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor"/><circle cx="10.5" cy="7" r="1.3" fill="currentColor"/><circle cx="15" cy="7.5" r="1.3" fill="currentColor"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 11v6M12 7.5v.01" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-in" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M14 4h5a2 2 0 012 2v12a2 2 0 01-2 2h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M16 17l5-5-5-5M21 12H9M10 4H5a2 2 0 00-2 2v12a2 2 0 002 2h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-cup" viewBox="0 0 24 24"><path d="M4 8h13v5a5 5 0 01-5 5H9a5 5 0 01-5-5V8zM17 9h1.5a2.5 2.5 0 010 5H17M8 2v3M12 2v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 20h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M3 15h18M9 4v16" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-bin" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l3-7 4 14 3-7h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10V7a4 4 0 018 0v3" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M4 9l1.5-5h13L20 9M4 9h16v11H4zM9 20v-6h6v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 6.5V12l3.5 2.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+ </defs>
+</svg>
+<div id="fileWarn"></div>
+<main class="app" id="main">
+
+<!-- HOME -->
+<section class="screen on" id="s-home" aria-labelledby="brandTitle">
+ <div class="top">
+  <button class="jobchip" id="jobChip" aria-haspopup="dialog"><span class="dot" id="jobDot"></span><span class="n" id="jobChipName"></span><svg><use href="#i-down"/></svg></button>
+  <div class="topacts">
+   <button class="ib" id="btnMode"><svg><use id="modeIcon" href="#i-sun"/></svg></button>
+   <button class="ib" id="btnAbout" data-ta="about"><svg><use href="#i-info"/></svg></button>
+  </div>
+ </div>
+ <p class="brand" id="brandTitle"><b>WorkNest</b> <span data-t="tagline"></span></p>
+ <div id="homeBanner"></div>
+ <div class="dialwrap">
+  <svg id="dial" viewBox="0 0 320 320" role="img"></svg>
+  <div class="dialc" aria-live="polite"><div class="dlbl" id="dLbl"></div><div class="dbig" id="dBig"></div><div class="dsub" id="dSub"></div></div>
+ </div>
+ <div class="punch">
+  <button class="btn pri big" id="btnPunch"></button>
+  <button class="btn" id="btnPause" hidden></button>
+ </div>
+ <div class="stats">
+  <div class="stat"><small data-t="today"></small><div class="v" id="stTodayH"></div><div class="v2" id="stTodayP"></div></div>
+  <div class="stat"><small data-t="thisPeriod"></small><div class="v" id="stPerH"></div><div class="v2" id="stPerP"></div></div>
+ </div>
+ <nav class="homenav">
+  <button class="navbtn" data-go="shifts"><svg><use href="#i-list"/></svg><span data-t="shifts"></span></button>
+  <button class="navbtn" data-go="add"><svg><use href="#i-plus"/></svg><span data-t="manualAdd"></span></button>
+  <button class="navbtn" data-go="jobs"><svg><use href="#i-brief"/></svg><span data-t="jobs"></span></button>
+  <button class="navbtn" data-go="settings"><svg><use href="#i-gear"/></svg><span data-t="settings"></span></button>
+ </nav>
+ <p class="badge">AppNest · <span id="verLbl"></span></p>
+</section>
+
+<!-- SHIFTS -->
+<section class="screen" id="s-shifts">
+ <div class="bar"><button class="backbtn" data-back><svg><use href="#i-back"/></svg><span data-t="back"></span></button><h1 data-t="shifts"></h1><button class="ib" data-go="add" data-ta="manualAdd"><svg><use href="#i-plus"/></svg></button></div>
+ <div class="phead">
+  <button class="ib" id="pPrev" data-ta="prevP"><svg><use href="#i-back"/></svg></button>
+  <div class="lbl" id="pLbl"></div>
+  <button class="ib" id="pNext" data-ta="nextP"><svg style="transform:scaleX(-1)"><use href="#i-back"/></svg></button>
+ </div>
+ <div id="shiftList" class="list"></div>
+ <div id="sumDetail"></div>
+ <div class="sumbar" id="sumBar" hidden><div class="in">
+  <div><small data-t="reports"></small><b id="sbN"></b></div>
+  <div><small data-t="hours"></small><b id="sbH"></b></div>
+  <div class="tot"><small data-t="total"></small><b id="sbP"></b></div>
+ </div></div>
+</section>
+
+<!-- ADD / EDIT SHIFT -->
+<section class="screen" id="s-add">
+ <div class="bar"><button class="backbtn" data-back><svg><use href="#i-back"/></svg><span data-t="back"></span></button><h1 id="addTitle"></h1></div>
+ <div id="addForm"></div>
+</section>
+
+<!-- JOBS -->
+<section class="screen" id="s-jobs">
+ <div class="bar"><button class="backbtn" data-back><svg><use href="#i-back"/></svg><span data-t="back"></span></button><h1 data-t="jobs"></h1></div>
+ <div id="jobList" class="stack"></div>
+ <button class="btn" id="btnNewJob"><svg><use href="#i-plus"/></svg><span data-t="newJob"></span></button>
+</section>
+
+<!-- JOB EDIT -->
+<section class="screen" id="s-job">
+ <div class="bar"><button class="backbtn" data-back><svg><use href="#i-back"/></svg><span data-t="back"></span></button><h1 data-t="jobSettings"></h1></div>
+ <p class="saved" data-t="autosaved"></p>
+ <div id="jobForm"></div>
+</section>
+
+<!-- SETTINGS -->
+<section class="screen" id="s-settings">
+ <div class="bar"><button class="backbtn" data-back><svg><use href="#i-back"/></svg><span data-t="back"></span></button><h1 data-t="settings"></h1></div>
+ <div id="setForm"></div>
+</section>
+
+<!-- BIN -->
+<section class="screen" id="s-bin">
+ <div class="bar"><button class="backbtn" data-back><svg><use href="#i-back"/></svg><span data-t="back"></span></button><h1 data-t="recycleBin"></h1></div>
+ <p class="note" data-t="binHint"></p>
+ <div id="binList" class="list"></div>
+</section>
+
+<!-- DIAG -->
+<section class="screen" id="s-diag">
+ <div class="bar"><button class="backbtn" data-back><svg><use href="#i-back"/></svg><span data-t="back"></span></button><h1 data-t="diagnostics"></h1></div>
+ <div id="diagBody"></div>
+</section>
+
+<!-- ABOUT -->
+<section class="screen" id="s-about">
+ <div class="bar"><button class="backbtn" data-back><svg><use href="#i-back"/></svg><span data-t="back"></span></button><h1 data-t="about"></h1></div>
+ <div id="aboutBody"></div>
+</section>
+
+</main>
+<div id="modalRoot"></div>
+<div id="toastRoot" aria-live="assertive"></div>
+<script>
+/* WorkNest — i18n dictionary. Every key: [he, en, ru, es, ar] */
+const LANGS=['he','en','ru','es','ar'];
+const LANG_NAMES=['עברית','English','Русский','Español','العربية'];
+const STR={
+skipLink:['דלג לתוכן','Skip to content','Перейти к содержимому','Saltar al contenido','تخطَّ إلى المحتوى'],
+tagline:['מעקב שעות העבודה שלי','My work hours tracker','Мой учёт рабочего времени','Mi control de horas de trabajo','متتبع ساعات عملي'],
+clockIn:['כניסה למשמרת','Clock in','Начать смену','Fichar entrada','بدء الوردية'],
+clockOut:['יציאה ממשמרת','Clock out','Завершить смену','Fichar salida','إنهاء الوردية'],
+pause:['יציאה להפסקה','Start break','Начать перерыв','Iniciar pausa','بدء الاستراحة'],
+resume:['חזרה מהפסקה','End break','Закончить перерыв','Terminar pausa','إنهاء الاستراحة'],
+onBreak:['בהפסקה','On break','На перерыве','En pausa','في استراحة'],
+atWork:['במשמרת מ-{t}','On shift since {t}','На смене с {t}','En turno desde {t}','في الوردية منذ {t}'],
+offWork:['לא במשמרת','Not on shift','Не на смене','Fuera de turno','لست في وردية'],
+earnedNow:['עד עכשיו {v}','So far {v}','Пока {v}','Hasta ahora {v}','حتى الآن {v}'],
+today:['היום','Today','Сегодня','Hoy','اليوم'],
+thisPeriod:['התקופה הנוכחית','This pay period','Текущий период','Periodo actual','الفترة الحالية'],
+hours:['שעות','Hours','Часы','Horas','ساعات'],
+pay:['שכר','Pay','Оплата','Salario','الأجر'],
+shifts:['משמרות','Shifts','Смены','Turnos','الورديات'],
+manualAdd:['הוספה ידנית','Add manually','Добавить вручную','Añadir a mano','إضافة يدوية'],
+editShift:['עריכת משמרת','Edit shift','Изменить смену','Editar turno','تعديل الوردية'],
+jobs:['עבודות','Jobs','Работы','Trabajos','الأعمال'],
+settings:['הגדרות','Settings','Настройки','Ajustes','الإعدادات'],
+back:['חזרה','Back','Назад','Volver','رجوع'],
+saveShift:['שמור משמרת','Save shift','Сохранить смену','Guardar turno','حفظ الوردية'],
+saveNext:['שמור ועבור ליום הבא','Save and go to next day','Сохранить и к следующему дню','Guardar y pasar al día siguiente','حفظ والانتقال لليوم التالي'],
+cancel:['ביטול','Cancel','Отмена','Cancelar','إلغاء'],
+del:['מחק','Delete','Удалить','Eliminar','حذف'],
+deleteShift:['מחק משמרת','Delete shift','Удалить смену','Eliminar turno','حذف الوردية'],
+deleteShiftQ:['למחוק את המשמרת? היא תעבור לסל המחזור.','Delete this shift? It moves to the recycle bin.','Удалить смену? Она попадёт в корзину.','¿Eliminar este turno? Irá a la papelera.','حذف هذه الوردية؟ ستنتقل إلى سلة المحذوفات.'],
+edit:['עריכה','Edit','Изменить','Editar','تعديل'],
+undo:['בטל','Undo','Отменить','Deshacer','تراجع'],
+ok:['אישור','OK','ОК','Aceptar','موافق'],
+close:['סגור','Close','Закрыть','Cerrar','إغلاق'],
+k_work:['עבודה','Work','Работа','Trabajo','عمل'],
+k_holiday:['חג','Holiday','Праздник','Festivo','عطلة رسمية'],
+k_vacation:['חופש','Vacation','Отпуск','Vacaciones','إجازة'],
+k_sick:['מחלה','Sick day','Больничный','Baja médica','إجازة مرضية'],
+k_reserve:['מילואים','Reserve duty','Военные сборы','Servicio de reserva','خدمة احتياط'],
+t_auto:['אוטומטי','Automatic','Автоматически','Automático','تلقائي'],
+t_morning:['משמרת בוקר','Morning shift','Утренняя смена','Turno de mañana','وردية صباحية'],
+t_afternoon:['משמרת צהריים','Afternoon shift','Дневная смена','Turno de tarde','وردية الظهر'],
+t_night:['משמרת לילה','Night shift','Ночная смена','Turno de noche','وردية ليلية'],
+t_shabbat:['שבת / חג','Shabbat / holiday','Шаббат / праздник','Sabbat / festivo','سبت / عيد'],
+date:['תאריך','Date','Дата','Fecha','التاريخ'],
+start:['שעת כניסה','Start time','Начало','Hora de entrada','وقت البدء'],
+end:['שעת יציאה','End time','Конец','Hora de salida','وقت الانتهاء'],
+inLbl:['כניסה','In','Вход','Entrada','دخول'],
+outLbl:['יציאה','Out','Выход','Salida','خروج'],
+plus24:['משמרת של יותר מ-24 שעות','Shift longer than 24 hours','Смена дольше 24 часов','Turno de más de 24 horas','وردية أطول من 24 ساعة'],
+nextDayNote:['היציאה ביום שאחרי','Ends the next day','Заканчивается на следующий день','Termina al día siguiente','تنتهي في اليوم التالي'],
+sameTime:['שעת הכניסה והיציאה זהות','Start and end times are the same','Время начала и конца совпадает','La entrada y la salida son iguales','وقت البدء والانتهاء متطابقان'],
+pauseMin:['הפסקות (דקות)','Breaks (minutes)','Перерывы (мин)','Pausas (minutos)','الاستراحات (دقائق)'],
+shiftType:['סוג משמרת','Shift type','Тип смены','Tipo de turno','نوع الوردية'],
+detected:['זוהה: {t}','Detected: {t}','Определено: {t}','Detectado: {t}','تم التعرّف: {t}'],
+bonus:['תוספת למשמרת (₪)','Shift bonus (₪)','Надбавка за смену (₪)','Plus del turno (₪)','إضافة للوردية (₪)'],
+deduct:['הורדה מהמשמרת (₪)','Shift deduction (₪)','Вычет за смену (₪)','Descuento del turno (₪)','خصم من الوردية (₪)'],
+note:['הערה','Note','Заметка','Nota','ملاحظة'],
+reports:['דיווחים','Entries','Записи','Registros','السجلات'],
+gross:['שכר משמרות','Shift pay','Оплата смен','Pago por turnos','أجر الورديات'],
+fixedAdd:['תוספות קבועות','Fixed additions','Постоянные надбавки','Pluses fijos','إضافات ثابتة'],
+fixedDed:['הורדות קבועות','Fixed deductions','Постоянные вычеты','Descuentos fijos','خصومات ثابتة'],
+total:['סה״כ ברוטו','Gross total','Итого брутто','Total bruto','الإجمالي'],
+travel:['נסיעות','Travel','Проезд','Transporte','المواصلات'],
+breakDed:['הפסקה שנוכתה','Break deducted','Вычтен перерыв','Pausa descontada','استراحة مخصومة'],
+breakdown:['פירוט שעות','Hours breakdown','Разбивка часов','Desglose de horas','تفصيل الساعات'],
+noShifts:['אין עדיין משמרות בתקופה הזו','No shifts in this period yet','В этом периоде пока нет смен','Aún no hay turnos en este periodo','لا توجد ورديات في هذه الفترة بعد'],
+noShiftsHint:['לחץ על "כניסה למשמרת" בדף הבית, או הוסף משמרת ידנית.','Tap "Clock in" on the home screen, or add a shift manually.','Нажмите «Начать смену» на главном экране или добавьте смену вручную.','Pulsa «Fichar entrada» en la pantalla principal o añade un turno a mano.','اضغط "بدء الوردية" في الشاشة الرئيسية أو أضف وردية يدويًا.'],
+prevP:['תקופה קודמת','Previous period','Предыдущий период','Periodo anterior','الفترة السابقة'],
+nextP:['תקופה הבאה','Next period','Следующий период','Periodo siguiente','الفترة التالية'],
+jobSettings:['הגדרות עבודה','Job settings','Настройки работы','Ajustes del trabajo','إعدادات العمل'],
+jobName:['שם העבודה','Job name','Название работы','Nombre del trabajo','اسم العمل'],
+color:['צבע','Color','Цвет','Color','اللون'],
+wage:['שכר לשעה (₪)','Hourly wage (₪)','Ставка в час (₪)','Salario por hora (₪)','الأجر بالساعة (₪)'],
+dayPay:['תשלום ליום היעדרות (₪)','Paid day-off rate (₪)','Оплата дня отсутствия (₪)','Pago por día de ausencia (₪)','أجر يوم الغياب (₪)'],
+dayPayAuto:['חשב אוטומטית (שכר × שעות בסיס)','Calculate automatically (wage × base hours)','Считать автоматически (ставка × базовые часы)','Calcular solo (salario × horas base)','احسب تلقائيًا (الأجر × الساعات الأساسية)'],
+fixedAddLbl:['תוספות קבועות לחודש (₪)','Monthly fixed additions (₪)','Ежемесячные надбавки (₪)','Pluses fijos mensuales (₪)','إضافات شهرية ثابتة (₪)'],
+fixedDedLbl:['הורדות קבועות לחודש (₪)','Monthly fixed deductions (₪)','Ежемесячные вычеты (₪)','Descuentos fijos mensuales (₪)','خصومات شهرية ثابتة (₪)'],
+secBreak:['הפסקות ונסיעות','Breaks and travel','Перерывы и проезд','Pausas y transporte','الاستراحات والمواصلات'],
+breakLen:['הפסקה לא בתשלום (דקות)','Unpaid break (minutes)','Неоплачиваемый перерыв (мин)','Pausa no pagada (minutos)','استراحة غير مدفوعة (دقائق)'],
+breakAfter:['לנכות הפסקה ממשמרת של (שעות)','Deduct break from shifts of (hours)','Вычитать перерыв из смен от (ч)','Descontar pausa en turnos de (horas)','اخصم الاستراحة من ورديات بطول (ساعات)'],
+breakHint:['אם יצאת להפסקה עם הכפתור, הזמן הזה מקוזז.','Breaks you record with the button count toward this.','Перерывы, отмеченные кнопкой, засчитываются сюда.','Las pausas registradas con el botón cuentan para esto.','الاستراحات المسجلة بالزر تُحتسب ضمن ذلك.'],
+travelDay:['נסיעות ליום עבודה (₪)','Travel per workday (₪)','Проезд за рабочий день (₪)','Transporte por día trabajado (₪)','المواصلات لكل يوم عمل (₪)'],
+overtimeOn:['חשב שעות נוספות','Calculate overtime','Считать сверхурочные','Calcular horas extra','احسب الساعات الإضافية'],
+periodStart:['תקופת השכר מתחילה ביום','Pay period starts on day','Расчётный период начинается','El periodo de pago empieza el día','تبدأ فترة الأجر في يوم'],
+periodHint:['1 = מה-1 לחודש עד ה-1 בחודש הבא','1 means from the 1st to the 1st of next month','1 — с 1-го числа до 1-го следующего месяца','1 significa del día 1 al día 1 del mes siguiente','1 = من اليوم الأول حتى الأول من الشهر التالي'],
+shiftTypes:['סוגי משמרות ושעות נוספות','Shift types and overtime','Типы смен и сверхурочные','Tipos de turno y horas extra','أنواع الورديات والساعات الإضافية'],
+baseHours:['שעות בסיס','Base hours','Базовые часы','Horas base','الساعات الأساسية'],
+ot1Hours:['שעות נוספות ראשונות','First overtime hours','Первые сверхурочные часы','Primeras horas extra','الساعات الإضافية الأولى'],
+pct0:['אחוז לשעות בסיס','Base hours rate %','Ставка базовых часов %','% horas base','نسبة الساعات الأساسية %'],
+pct1:['אחוז לנוספות ראשונות','First overtime rate %','Ставка первых сверхурочных %','% primeras horas extra','نسبة الإضافي الأول %'],
+pct2:['אחוז לנוספות מעבר לזה','Further overtime rate %','Ставка дальнейших сверхурочных %','% horas extra siguientes','نسبة الإضافي بعد ذلك %'],
+afternoonStart:['משמרת צהריים מתחילה מ','Afternoon shift starts from','Дневная смена начинается с','El turno de tarde empieza a las','تبدأ وردية الظهر من'],
+nightFrom:['שעות לילה מ','Night hours from','Ночные часы с','Horas nocturnas desde','ساعات الليل من'],
+nightTo:['שעות לילה עד','Night hours until','Ночные часы до','Horas nocturnas hasta','ساعات الليل حتى'],
+nightHint:['משמרת נחשבת לילה כשיש בה לפחות שעתיים בטווח הזה.','A shift counts as night when at least 2 hours fall in this range.','Смена считается ночной, если в этот диапазон попадает не менее 2 часов.','Un turno cuenta como nocturno si al menos 2 horas caen en este rango.','تُحتسب الوردية ليلية إذا وقعت ساعتان على الأقل في هذا النطاق.'],
+shabbatFrom:['שבת מתחילה','Shabbat starts','Шаббат начинается','El sabbat empieza','يبدأ السبت'],
+shabbatTo:['שבת מסתיימת','Shabbat ends','Шаббат заканчивается','El sabbat termina','ينتهي السبت'],
+shabbatHint:['משמרת נחשבת שבת כשרובה בתוך הטווח. בחג בוחרים ידנית "שבת / חג" בעריכת המשמרת.','A shift counts as Shabbat when most of it falls in this range. For holidays, choose "Shabbat / holiday" when editing the shift.','Смена считается шаббатней, если большая её часть в этом диапазоне. Для праздников выберите «Шаббат / праздник» при редактировании смены.','Un turno cuenta como sabbat si la mayor parte cae en este rango. Para festivos, elige «Sabbat / festivo» al editar el turno.','تُحتسب الوردية سبتًا إذا وقع معظمها في هذا النطاق. في الأعياد اختر "سبت / عيد" عند تعديل الوردية.'],
+absencePay:['תשלום לימי היעדרות (% מתשלום יום)','Pay for days off (% of day rate)','Оплата дней отсутствия (% от дневной ставки)','Pago de días de ausencia (% del día)','أجر أيام الغياب (% من أجر اليوم)'],
+newJob:['עבודה חדשה','New job','Новая работа','Nuevo trabajo','عمل جديد'],
+defaultJob:['העבודה שלי','My job','Моя работа','Mi trabajo','عملي'],
+deleteJob:['מחק עבודה','Delete job','Удалить работу','Eliminar trabajo','حذف العمل'],
+deleteJobQ:['למחוק את "{n}" ואת כל המשמרות שלה? אי אפשר לבטל את זה.','Delete "{n}" and all its shifts? This can\'t be undone.','Удалить «{n}» и все её смены? Это нельзя отменить.','¿Eliminar «{n}» y todos sus turnos? No se puede deshacer.','حذف "{n}" وجميع وردياته؟ لا يمكن التراجع عن ذلك.'],
+deleteJobQ2:['בטוח? כדאי לשמור קובץ גיבוי לפני.','Are you sure? Consider saving a backup file first.','Вы уверены? Лучше сначала сохранить резервную копию.','¿Seguro? Conviene guardar una copia antes.','هل أنت متأكد؟ يُفضّل حفظ نسخة احتياطية أولًا.'],
+lastJob:['צריך לפחות עבודה אחת','You need at least one job','Нужна хотя бы одна работа','Necesitas al menos un trabajo','يجب وجود عمل واحد على الأقل'],
+activeJob:['העבודה הפעילה','Active job','Активная работа','Trabajo activo','العمل النشط'],
+selectJob:['בחר עבודה','Choose a job','Выберите работу','Elige un trabajo','اختر عملًا'],
+perHour:['{v} לשעה','{v} per hour','{v} в час','{v} por hora','{v} للساعة'],
+autosaved:['השינויים נשמרים אוטומטית','Changes save automatically','Изменения сохраняются автоматически','Los cambios se guardan solos','تُحفظ التغييرات تلقائيًا'],
+activeLocked:['אי אפשר להחליף עבודה באמצע משמרת','You can\'t switch jobs during a shift','Нельзя сменить работу во время смены','No puedes cambiar de trabajo durante un turno','لا يمكن تغيير العمل أثناء الوردية'],
+userName:['שם משתמש','Your name','Ваше имя','Tu nombre','اسمك'],
+userNameHint:['יופיע בכל דוח וגיבוי','Shown on every report and backup','Отображается в отчётах и копиях','Aparece en cada informe y copia','يظهر في كل تقرير ونسخة'],
+language:['שפה','Language','Язык','Idioma','اللغة'],
+theme:['עיצוב','Theme','Оформление','Tema','المظهر'],
+dayMode:['מצב יום','Day mode','Дневной режим','Modo día','الوضع النهاري'],
+toDay:['עבור למצב יום','Switch to day mode','Включить дневной режим','Cambiar a modo día','التبديل إلى الوضع النهاري'],
+toNight:['עבור למצב לילה','Switch to night mode','Включить ночной режим','Cambiar a modo noche','التبديل إلى الوضع الليلي'],
+th_gold:['זהב','Gold','Золото','Oro','ذهبي'],
+th_silver:['כסף','Silver','Серебро','Plata','فضي'],
+th_copper:['נחושת','Copper','Медь','Cobre','نحاسي'],
+th_emerald:['אזמרגד','Emerald','Изумруд','Esmeralda','زمردي'],
+th_sapphire:['ספיר','Sapphire','Сапфир','Zafiro','ياقوتي'],
+backup:['גיבוי ושחזור','Backup and restore','Резервная копия','Copia y restauración','النسخ الاحتياطي والاستعادة'],
+exportJson:['שמור קובץ גיבוי','Save backup file','Сохранить резервную копию','Guardar copia de seguridad','حفظ ملف النسخة الاحتياطية'],
+importJson:['שחזר מקובץ גיבוי','Restore from backup file','Восстановить из файла','Restaurar desde una copia','استعادة من ملف نسخة'],
+importQ:['השחזור יחליף את כל הנתונים הנוכחיים. להמשיך?','Restoring replaces all current data. Continue?','Восстановление заменит все текущие данные. Продолжить?','Restaurar reemplaza todos los datos actuales. ¿Continuar?','الاستعادة ستستبدل جميع البيانات الحالية. متابعة؟'],
+importDone:['הנתונים שוחזרו','Data restored','Данные восстановлены','Datos restaurados','تمت استعادة البيانات'],
+importBad:['הקובץ הזה אינו גיבוי של WorkNest','This file isn\'t a WorkNest backup','Этот файл не является копией WorkNest','Este archivo no es una copia de WorkNest','هذا الملف ليس نسخة احتياطية من WorkNest'],
+exportCsv:['ייצוא התקופה ל-Excel (CSV)','Export this period to Excel (CSV)','Экспорт периода в Excel (CSV)','Exportar el periodo a Excel (CSV)','تصدير الفترة إلى Excel (CSV)'],
+lastBackup:['גיבוי אחרון: {d}','Last backup: {d}','Последняя копия: {d}','Última copia: {d}','آخر نسخة: {d}'],
+never:['עדיין לא','not yet','ещё не было','aún no','لم يتم بعد'],
+backupNudge:['עברו יותר משבועיים מהגיבוי האחרון. כדאי לשמור קובץ גיבוי.','It\'s been over two weeks since your last backup. Save a backup file.','С последней копии прошло больше двух недель. Сохраните резервную копию.','Han pasado más de dos semanas desde la última copia. Guarda una copia.','مرّ أكثر من أسبوعين على آخر نسخة. احفظ ملف نسخة احتياطية.'],
+recycleBin:['סל מחזור','Recycle bin','Корзина','Papelera','سلة المحذوفات'],
+binHint:['משמרות שנמחקו נשמרות כאן 30 יום.','Deleted shifts stay here for 30 days.','Удалённые смены хранятся здесь 30 дней.','Los turnos eliminados se quedan aquí 30 días.','تبقى الورديات المحذوفة هنا 30 يومًا.'],
+binEmpty:['סל המחזור ריק','The recycle bin is empty','Корзина пуста','La papelera está vacía','سلة المحذوفات فارغة'],
+restore:['שחזר','Restore','Восстановить','Restaurar','استعادة'],
+deleteForever:['מחק לצמיתות','Delete forever','Удалить навсегда','Eliminar para siempre','حذف نهائي'],
+emptyBin:['רוקן את הסל','Empty the bin','Очистить корзину','Vaciar la papelera','إفراغ السلة'],
+emptyBinQ:['למחוק לצמיתות את כל מה שבסל?','Permanently delete everything in the bin?','Удалить навсегда всё из корзины?','¿Eliminar para siempre todo lo de la papelera?','حذف كل ما في السلة نهائيًا؟'],
+diagnostics:['אבחון ותמיכה','Diagnostics and support','Диагностика и поддержка','Diagnóstico y soporte','التشخيص والدعم'],
+copyReport:['העתק דוח אבחון','Copy diagnostics report','Копировать отчёт','Copiar informe','نسخ تقرير التشخيص'],
+copied:['הועתק','Copied','Скопировано','Copiado','تم النسخ'],
+errLog:['שגיאות אחרונות','Recent errors','Последние ошибки','Errores recientes','الأخطاء الأخيرة'],
+noErrors:['אין שגיאות','No errors','Ошибок нет','Sin errores','لا توجد أخطاء'],
+dg_version:['גרסה','Version','Версия','Versión','الإصدار'],
+dg_install:['מותקנת כאפליקציה','Installed as app','Установлено как приложение','Instalada como app','مثبت كتطبيق'],
+dg_storage:['אחסון','Storage','Хранилище','Almacenamiento','التخزين'],
+dg_persist:['אחסון מתמשך','Persistent storage','Постоянное хранилище','Almacenamiento persistente','تخزين دائم'],
+dg_sw:['עבודה אופליין','Offline support','Работа офлайн','Uso sin conexión','العمل دون اتصال'],
+dg_data:['נתונים','Data','Данные','Datos','البيانات'],
+dg_device:['דפדפן','Browser','Браузер','Navegador','المتصفح'],
+yes:['כן','Yes','Да','Sí','نعم'],
+no:['לא','No','Нет','No','لا'],
+onDevice:['במכשיר','On device','На устройстве','En el dispositivo','على الجهاز'],
+memOnly:['זמני בלבד, לא נשמר!','Temporary only, not saved!','Только временно, не сохраняется!','Solo temporal, ¡no se guarda!','مؤقت فقط، لا يُحفظ!'],
+tour:['מדריך היכרות','Quick tour','Краткий обзор','Recorrido rápido','جولة تعريفية'],
+about:['אודות','About','О приложении','Acerca de','حول التطبيق'],
+privacy:['מדיניות פרטיות','Privacy policy','Политика конфиденциальности','Política de privacidad','سياسة الخصوصية'],
+resetAll:['מחק את כל הנתונים','Delete all data','Удалить все данные','Borrar todos los datos','حذف جميع البيانات'],
+resetQ1:['למחוק את כל העבודות, המשמרות וההגדרות?','Delete all jobs, shifts and settings?','Удалить все работы, смены и настройки?','¿Borrar todos los trabajos, turnos y ajustes?','حذف جميع الأعمال والورديات والإعدادات؟'],
+resetQ2:['זה סופי. בלי קובץ גיבוי אין דרך לשחזר. למחוק?','This is final. Without a backup file there\'s no way back. Delete?','Это окончательно. Без резервной копии восстановить нельзя. Удалить?','Es definitivo. Sin una copia no hay vuelta atrás. ¿Borrar?','هذا نهائي. بدون ملف نسخة لا يمكن الاستعادة. حذف؟'],
+saveFail:['השמירה נכשלה. שמור קובץ גיבוי עכשיו.','Saving failed. Save a backup file now.','Сохранение не удалось. Сохраните резервную копию.','No se pudo guardar. Guarda una copia ahora.','فشل الحفظ. احفظ ملف نسخة احتياطية الآن.'],
+clockedIn:['נרשמה כניסה ב-{t}','Clocked in at {t}','Смена начата в {t}','Entrada fichada a las {t}','تم تسجيل البدء عند {t}'],
+clockedOut:['נרשמה יציאה, {h} שעות','Clocked out, {h} hours','Смена завершена, {h} ч','Salida fichada, {h} horas','تم تسجيل الانتهاء، {h} ساعات'],
+shiftSaved:['המשמרת נשמרה','Shift saved','Смена сохранена','Turno guardado','تم حفظ الوردية'],
+deleted:['נמחק','Deleted','Удалено','Eliminado','تم الحذف'],
+restored:['שוחזר','Restored','Восстановлено','Restaurado','تمت الاستعادة'],
+longShift:['אתה במשמרת כבר {h} שעות. שכחת להחתים יציאה?','You\'ve been on shift for {h} hours. Forgot to clock out?','Вы на смене уже {h} ч. Забыли завершить смену?','Llevas {h} horas en turno. ¿Olvidaste fichar la salida?','أنت في الوردية منذ {h} ساعة. هل نسيت تسجيل الانتهاء؟'],
+fixNow:['סיים ותקן את השעה','Clock out and fix the time','Завершить и исправить время','Fichar salida y corregir la hora','إنهاء وتصحيح الوقت'],
+fileWarn:['האפליקציה נפתחה מקובץ מקומי. כדי שתעבוד אופליין ותשמור נתונים כראוי, פתח אותה מהכתובת שלה באינטרנט.','The app was opened from a local file. Open it from its web address so it works offline and saves properly.','Приложение открыто из локального файла. Откройте его по веб-адресу, чтобы оно работало офлайн и сохраняло данные.','La app se abrió desde un archivo local. Ábrela desde su dirección web para que funcione sin conexión y guarde bien.','تم فتح التطبيق من ملف محلي. افتحه من عنوانه على الإنترنت ليعمل دون اتصال ويحفظ البيانات بشكل صحيح.'],
+aboutDesc:['מעקב שעות, משמרות ושכר. בלי פרסומות, בלי חשבון, והכול נשמר רק במכשיר שלך.','Track hours, shifts and pay. No ads, no account, and everything stays on your device.','Учёт часов, смен и оплаты. Без рекламы и без аккаунта, всё хранится только на вашем устройстве.','Controla horas, turnos y salario. Sin anuncios ni cuenta; todo se queda en tu dispositivo.','تتبّع الساعات والورديات والأجر. بلا إعلانات ولا حساب، وكل شيء يبقى على جهازك.'],
+ab_dev:['פיתוח','Developer','Разработчик','Desarrollador','المطوّر'],
+ab_platform:['פלטפורמה','Platform','Платформа','Plataforma','المنصة'],
+ab_storageVal:['במכשיר בלבד','On this device only','Только на этом устройстве','Solo en este dispositivo','على هذا الجهاز فقط'],
+ab_license:['רישיון','License','Лицензия','Licencia','الترخيص'],
+store:['לחנות AppNest','AppNest store','Магазин AppNest','Tienda AppNest','متجر AppNest'],
+share:['שתף את האפליקציה','Share the app','Поделиться приложением','Compartir la app','مشاركة التطبيق'],
+feedback:['שלח משוב','Send feedback','Отправить отзыв','Enviar comentarios','إرسال ملاحظات'],
+disclaimer:['חישובי השכר הם הערכה בלבד לפי ההגדרות שהזנת, ואינם ייעוץ חשבונאי או משפטי. תלוש השכר הרשמי הוא הקובע.','Pay figures are estimates based on your settings, not accounting or legal advice. Your official payslip is what counts.','Расчёты оплаты — лишь оценка по вашим настройкам, а не бухгалтерская или юридическая консультация. Решающим является официальный расчётный лист.','Los importes son estimaciones según tus ajustes, no asesoría contable ni legal. Lo que cuenta es tu nómina oficial.','حسابات الأجر تقديرية حسب إعداداتك وليست استشارة محاسبية أو قانونية. قسيمة الراتب الرسمية هي المرجع.'],
+next:['הבא','Next','Далее','Siguiente','التالي'],
+skip:['דלג','Skip','Пропустить','Omitir','تخطي'],
+letsGo:['בוא נתחיל','Let\'s start','Начнём','Empecemos','لنبدأ'],
+ob1t:['ברוך הבא ל-WorkNest','Welcome to WorkNest','Добро пожаловать в WorkNest','Bienvenido a WorkNest','مرحبًا بك في WorkNest'],
+ob1b:['מעקב שעות ושכר בלי פרסומות. הכול נשמר רק בטלפון שלך.','Hours and pay tracking with no ads. Everything stays on your phone.','Учёт часов и оплаты без рекламы. Всё хранится только в вашем телефоне.','Control de horas y salario sin anuncios. Todo se queda en tu teléfono.','تتبّع الساعات والأجر بلا إعلانات. كل شيء يبقى على هاتفك.'],
+ob2t:['הגדר את העבודה','Set up your job','Настройте работу','Configura tu trabajo','اضبط عملك'],
+ob2b:['במסך "עבודות" קובעים שכר לשעה, הפסקות, נסיעות ומדרגות שעות נוספות.','In "Jobs" you set your hourly wage, breaks, travel and overtime rates.','В разделе «Работы» задаются ставка, перерывы, проезд и ставки сверхурочных.','En «Trabajos» defines salario por hora, pausas, transporte y horas extra.','في شاشة "الأعمال" تحدد الأجر بالساعة والاستراحات والمواصلات ونسب الإضافي.'],
+ob3t:['לחיצה בכניסה, לחיצה ביציאה','One tap in, one tap out','Одно нажатие на входе и выходе','Un toque al entrar y otro al salir','نقرة للبدء ونقرة للانتهاء'],
+ob3b:['השעון ממשיך לרוץ גם כשהאפליקציה סגורה. המשמרת נרשמת לפי השעה האמיתית.','The clock keeps running even when the app is closed. Shifts use the real time.','Часы идут даже при закрытом приложении. Смена записывается по реальному времени.','El reloj sigue aunque cierres la app. Los turnos usan la hora real.','تستمر الساعة حتى عند إغلاق التطبيق. تُسجَّل الوردية حسب الوقت الحقيقي.'],
+ob4t:['שכחת להחתים?','Forgot to clock in?','Забыли отметиться?','¿Olvidaste fichar?','نسيت التسجيل؟'],
+ob4b:['אפשר להוסיף או לתקן כל משמרת ידנית, כולל חג, חופש, מחלה ומילואים.','You can add or fix any shift by hand, including holidays, vacation, sick days and reserve duty.','Любую смену можно добавить или исправить вручную, включая праздники, отпуск, больничный и сборы.','Puedes añadir o corregir cualquier turno a mano, incluidos festivos, vacaciones, bajas y reserva.','يمكنك إضافة أو تصحيح أي وردية يدويًا، بما فيها العطل والإجازات والمرض والاحتياط.'],
+ob5t:['גבה מדי פעם','Back up now and then','Делайте копии время от времени','Haz copias de vez en cuando','احفظ نسخة من حين لآخر'],
+ob5b:['הנתונים לא עוברים לשום שרת. שמור קובץ גיבוי בהגדרות כדי לא לאבד אותם.','Your data never goes to a server. Save a backup file in Settings so you don\'t lose it.','Данные не отправляются на сервер. Сохраняйте резервную копию в настройках, чтобы их не потерять.','Tus datos nunca van a un servidor. Guarda una copia en Ajustes para no perderlos.','بياناتك لا تُرسل إلى أي خادم. احفظ نسخة احتياطية من الإعدادات كي لا تفقدها.'],
+dayOff:['יום היעדרות','Day off','День отсутствия','Día de ausencia','يوم غياب'],
+csvTitle:['דוח שעות','Hours report','Отчёт по часам','Informe de horas','تقرير الساعات'],
+exported:['הופק','Exported','Создано','Exportado','تم التصدير'],
+weekday:['יום','Day','День','Día','اليوم'],
+kind:['סוג','Type','Тип','Tipo','النوع'],
+};
+</script>
+<script>
+/* WorkNest — core. Single file PWA, AppNest. Data stays on device (localStorage via shim). */
+'use strict';
+const VERSION='1.0.1';
+const SKEY='worknest_state_v1', EKEY='worknest_errors';
+const DAY_MS=86400000;
+
+/* ---------- error log (Part J) ---------- */
+function logErr(msg,src,line){try{const a=JSON.parse(localStorage.getItem(EKEY)||'[]');a.unshift({m:String(msg).slice(0,300),s:String(src||'').split('/').pop(),l:line||0,t:new Date().toISOString()});localStorage.setItem(EKEY,JSON.stringify(a.slice(0,10)))}catch(e){}}
+window.addEventListener('error',e=>logErr(e.message,e.filename,e.lineno));
+window.addEventListener('unhandledrejection',e=>logErr('Promise: '+((e.reason&&e.reason.message)||e.reason)));
+
+/* ---------- storage shim (Part B.7) ---------- */
+const store=(()=>{let ok=false;const mem={};try{localStorage.setItem('__wn','1');localStorage.removeItem('__wn');ok=true}catch(e){}
+ return{ok:()=>ok,get(k){try{return ok?localStorage.getItem(k):(k in mem?mem[k]:null)}catch(e){return k in mem?mem[k]:null}},
+ set(k,v){if(ok)localStorage.setItem(k,v);else mem[k]=v},del(k){try{ok?localStorage.removeItem(k):delete mem[k]}catch(e){}}}})();
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const r2=n=>Math.round((+n||0)*100)/100;
+const num=(v,d=0)=>{const n=parseFloat(v);return isFinite(n)?n:d};
+const pad=n=>String(n).padStart(2,'0');
+const hm=s=>{const[a,b]=String(s||'0:0').split(':');return(+a||0)*60+(+b||0)};
+function atTime(y,m,d,str){const x=hm(str);return new Date(y,m,d,Math.floor(x/60),x%60).getTime()}
+function dayParts(ms){const d=new Date(ms);return[d.getFullYear(),d.getMonth(),d.getDate()]}
+function isoDate(ms){const[y,m,d]=dayParts(ms);return y+'-'+pad(m+1)+'-'+pad(d)}
+function hhmm(ms){const d=new Date(ms);return pad(d.getHours())+':'+pad(d.getMinutes())}
+function ovl(a1,a2,b1,b2){return Math.max(0,Math.min(a2,b2)-Math.max(a1,b1))}
+function fmtH(min){min=Math.max(0,Math.round(min));return Math.floor(min/60)+':'+pad(min%60)}
+function locale(){return({he:'he-IL',en:'en-GB',ru:'ru-RU',es:'es-ES',ar:'ar-EG'})[S.lang]||'he-IL'}
+function money(n){n=+n||0;return '₪'+n.toLocaleString(locale().replace('ar-EG','ar-IL-u-nu-latn'),{minimumFractionDigits:Number.isInteger(r2(n))?0:2,maximumFractionDigits:2})}
+function fmtDay(ms,opt){return new Intl.DateTimeFormat(locale().replace('ar-EG','ar-u-nu-latn'),opt).format(new Date(ms))}
+function wdName(i,style){const d=new Date(2024,0,7+i);return fmtDay(d.getTime(),{weekday:style||'long'})}
+
+/* ---------- i18n ---------- */
+function T(k,vars){const a=STR[k];if(!a)return k;let s=a[LANGS.indexOf(S.lang)]||a[1]||k;if(vars)for(const v in vars)s=s.split('{'+v+'}').join(vars[v]);return s}
+
+/* ---------- state ---------- */
+function defTypes(){return{
+ morning:{base:8,h1:2,p0:100,p1:125,p2:150},
+ afternoon:{base:8,h1:2,p0:100,p1:125,p2:150,start:'15:00'},
+ night:{base:7,h1:2,p0:100,p1:125,p2:150,from:'22:00',to:'06:00'},
+ shabbat:{base:8,h1:2,p0:150,p1:175,p2:200,fromDay:5,from:'16:00',toDay:6,to:'20:00'}}}
+function newJob(name){return{id:uid(),name:name||T('defaultJob'),color:'#D4AF37',wage:50,dayPayAuto:true,dayPay:400,fixedAdd:0,fixedDed:0,
+ breakMin:0,breakAfter:6,travel:0,overtime:true,periodStart:1,types:defTypes(),absence:{holiday:100,vacation:100,sick:100,reserve:100}}}
+function defState(){const guess=(navigator.language||'he').slice(0,2);const lang=LANGS.includes(guess)?guess:'he';
+ const s={v:1,lang,theme:'gold',mode:'night',user:'',onboarded:false,lastBackup:0,jobs:[],cur:null,active:null,shifts:[]};return s}
+let S=defState();
+function migrate(o){const d=defState();const s=Object.assign(d,o||{});
+ if(!Array.isArray(s.jobs))s.jobs=[];if(!Array.isArray(s.shifts))s.shifts=[];
+ s.jobs=s.jobs.map(j=>{const n=newJob(j.name);const m=Object.assign(n,j);m.types=Object.assign(defTypes(),j.types||{});
+  for(const k in m.types)m.types[k]=Object.assign(defTypes()[k],(j.types||{})[k]||{});m.absence=Object.assign(n.absence,j.absence||{});return m});
+ if(!['day','night'].includes(s.mode))s.mode='night';
+ if(!['gold','silver','copper','emerald','sapphire'].includes(s.theme))s.theme='gold';
+ if(!LANGS.includes(s.lang))s.lang='he';
+ return s}
+function load(){try{const raw=store.get(SKEY);if(raw)S=migrate(JSON.parse(raw))}catch(e){logErr('load: '+e.message)}fixup()}
+function fixup(){if(!S.jobs.length){S.jobs.push(newJob());}
+ if(!S.jobs.find(j=>j.id===S.cur))S.cur=S.jobs[0].id;
+ purgeBin()}
+let persistAsked=false;
+function save(){try{store.set(SKEY,JSON.stringify(S))}catch(e){logErr('save: '+e.message);toast(T('saveFail'));return false}
+ if(!persistAsked&&navigator.storage&&navigator.storage.persist){persistAsked=true;navigator.storage.persist().catch(()=>{})}
+ return true}
+function job(id){return S.jobs.find(j=>j.id===(id||S.cur))||S.jobs[0]}
+function purgeBin(){const lim=Date.now()-30*DAY_MS;S.shifts=S.shifts.filter(s=>!s.deleted||s.deleted>lim)}
+
+/* ---------- calculation engine ---------- */
+function dayPay(j){return j.dayPayAuto?r2(j.wage*j.types.morning.base):num(j.dayPay)}
+function shabbatOverlap(a,b,t){let sum=0;const[y,m,d]=dayParts(a);
+ for(let i=-7;;i++){const dd=new Date(y,m,d+i);if(dd.getTime()>b)break;
+  if(dd.getDay()===+t.fromDay){const span=((+t.toDay-+t.fromDay)+7)%7;
+   const ws=atTime(dd.getFullYear(),dd.getMonth(),dd.getDate(),t.from);
+   const we=atTime(dd.getFullYear(),dd.getMonth(),dd.getDate()+span,t.to);
+   if(we>ws)sum+=ovl(a,b,ws,we)}}return sum}
+function nightOverlap(a,b,t){let sum=0;const[y,m,d]=dayParts(a);const cross=hm(t.to)<=hm(t.from);
+ for(let i=-1;;i++){const dd=new Date(y,m,d+i);if(dd.getTime()>b)break;
+  const ws=atTime(dd.getFullYear(),dd.getMonth(),dd.getDate(),t.from);
+  const we=atTime(dd.getFullYear(),dd.getMonth(),dd.getDate()+(cross?1:0),t.to);
+  sum+=ovl(a,b,ws,we)}return sum}
+function classify(a,b,j){const t=j.types,dur=b-a;if(dur<=0)return'morning';
+ const so=shabbatOverlap(a,b,t.shabbat);if(so>0&&so>=dur/2)return'shabbat';
+ if(nightOverlap(a,b,t.night)>=120*60000)return'night';
+ const d=new Date(a);if(d.getHours()*60+d.getMinutes()>=hm(t.afternoon.start))return'afternoon';
+ return'morning'}
+function calc(s,j){j=j||job(s.jobId);const r={min:0,tiers:[],pay:0,base:0,type:null,breakDed:0,travel:0,bonus:num(s.bonus),deduct:num(s.deduct)};
+ if(s.kind&&s.kind!=='work'){const pct=num((j.absence||{})[s.kind],100);r.base=r2(dayPay(j)*pct/100);r.pay=r2(r.base+r.bonus-r.deduct);return r}
+ const gross=Math.max(0,(s.end-s.start)/60000);const pm=Math.max(0,num(s.pauseMin));let w=Math.max(0,gross-pm);
+ if(num(j.breakMin)>0&&w>=num(j.breakAfter)*60){r.breakDed=Math.min(w,Math.max(0,num(j.breakMin)-pm));w-=r.breakDed}
+ w=Math.round(w);
+ const type=(s.forceType&&s.forceType!=='auto')?s.forceType:classify(s.start,s.end,j);const c=j.types[type];
+ let tiers;if(!j.overtime)tiers=[{p:num(c.p0,100),m:w}];else{const b0=num(c.base)*60,b1=num(c.h1)*60;
+  tiers=[{p:num(c.p0,100),m:Math.min(w,b0)},{p:num(c.p1,125),m:Math.min(Math.max(w-b0,0),b1)},{p:num(c.p2,150),m:Math.max(w-b0-b1,0)}]}
+ r.base=r2(tiers.reduce((x,t)=>x+num(j.wage)*t.m/60*t.p/100,0));
+ r.travel=w>0?num(j.travel):0;r.min=w;r.tiers=tiers;r.type=type;
+ r.pay=r2(r.base+r.travel+r.bonus-r.deduct);return r}
+function periodOf(ms,j){const P=Math.min(28,Math.max(1,Math.round(num(j.periodStart,1))));const d=new Date(ms);
+ let y=d.getFullYear(),m=d.getMonth();if(d.getDate()<P){m--;if(m<0){m=11;y--}}return{y,m,P}}
+function periodRange(p){return{from:new Date(p.y,p.m,p.P).getTime(),to:new Date(p.y,p.m+1,p.P).getTime()}}
+function shiftsIn(from,to,jobId){return S.shifts.filter(s=>!s.deleted&&s.jobId===jobId&&s.start>=from&&s.start<to).sort((a,b)=>a.start-b.start)}
+function summary(from,to,j){const list=shiftsIn(from,to,j.id);let min=0,gross=0;list.forEach(s=>{const c=calc(s,j);min+=c.min;gross+=c.pay});
+ const hasAny=list.length>0;const fa=hasAny?num(j.fixedAdd):0,fd=hasAny?num(j.fixedDed):0;
+ return{n:list.length,min,gross:r2(gross),fixedAdd:fa,fixedDed:fd,total:r2(gross+fa-fd),list}}
+
+/* ---------- live shift ---------- */
+function activeElapsedMs(now){const a=S.active;if(!a)return 0;now=now||Date.now();
+ let paused=a.pauses.reduce((x,p)=>x+(p[1]-p[0]),0);if(a.pausedAt)paused+=now-a.pausedAt;return Math.max(0,now-a.start-paused)}
+function activePauseMin(now){const a=S.active;if(!a)return 0;now=now||Date.now();let p=a.pauses.reduce((x,q)=>x+(q[1]-q[0]),0);if(a.pausedAt)p+=now-a.pausedAt;return p/60000}
+function clockIn(){if(S.active)return;S.active={jobId:S.cur,start:Date.now(),pauses:[],pausedAt:null};save();toast(T('clockedIn',{t:hhmm(S.active.start)}));vib(30);renderHome()}
+function clockOut(openEdit){const a=S.active;if(!a)return;const now=Date.now();if(a.pausedAt){a.pauses.push([a.pausedAt,now]);a.pausedAt=null}
+ const sh={id:uid(),jobId:a.jobId,kind:'work',start:a.start,end:now,pauseMin:Math.round(a.pauses.reduce((x,p)=>x+(p[1]-p[0]),0)/60000),forceType:'auto',bonus:0,deduct:0,note:''};
+ const snap=JSON.parse(JSON.stringify(a));S.shifts.push(sh);S.active=null;save();vib([30,60,30]);renderHome();
+ const c=calc(sh);
+ if(openEdit){openShiftEdit(sh.id);return}
+ toast(T('clockedOut',{h:fmtH(c.min)}),T('undo'),()=>{S.shifts=S.shifts.filter(x=>x.id!==sh.id);S.active=snap;save();renderHome()})}
+function togglePause(){const a=S.active;if(!a)return;const now=Date.now();if(a.pausedAt){a.pauses.push([a.pausedAt,now]);a.pausedAt=null}else a.pausedAt=now;save();vib(20);renderHome()}
+function vib(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
+
+/* ---------- theme / lang ---------- */
+function applyLook(){const h=document.documentElement;h.dataset.theme=S.theme;h.dataset.mode=S.mode;
+ const m=document.querySelector('meta[name=theme-color]');if(m)m.content=S.mode==='day'?'#f1f1ee':'#000000';
+ const mb=document.getElementById('btnMode'),mi=document.getElementById('modeIcon');if(mb&&mi){const toDay=S.mode!=='day';mi.setAttribute('href',toDay?'#i-sun':'#i-moon');mb.setAttribute('aria-label',T(toDay?'toDay':'toNight'));mb.title=T(toDay?'toDay':'toNight')}}
+function applyLang(){const h=document.documentElement;setTimeout(applyLook,0);h.lang=S.lang;h.dir=(S.lang==='he'||S.lang==='ar')?'rtl':'ltr';
+ document.querySelectorAll('[data-t]').forEach(e=>e.textContent=T(e.dataset.t));
+ document.querySelectorAll('[data-ta]').forEach(e=>{e.setAttribute('aria-label',T(e.dataset.ta));e.title=T(e.dataset.ta)});
+ document.title='WorkNest — '+T('tagline')}
+function rerenderAll(){applyLook();applyLang();renderHome();const cur=screenStack[screenStack.length-1];if(cur&&RENDER[cur])RENDER[cur]()}
+
+/* ---------- navigation ---------- */
+const screenStack=['home'];
+const RENDER={shifts:renderShifts,add:renderAdd,jobs:renderJobs,job:renderJob,settings:renderSettings,bin:renderBin,diag:renderDiag,about:renderAbout,home:renderHome};
+function go(name,noPush){if(name==='add'&&!noPush){startNewShift()}
+ document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id==='s-'+name));
+ if(!noPush){screenStack.push(name);try{history.pushState({s:name},'')}catch(e){}}
+ if(RENDER[name])RENDER[name]();window.scrollTo(0,0);
+ const h=document.querySelector('#s-'+name+' h1, #s-'+name+' .brand');if(h&&name!=='home'){h.setAttribute('tabindex','-1');h.focus({preventScroll:true})}}
+function back(){if(screenStack.length>1){screenStack.pop();go(screenStack[screenStack.length-1],true)}}
+window.addEventListener('popstate',()=>{if(document.querySelector('.ov')){closeModal();try{history.pushState({s:screenStack[screenStack.length-1]},'')}catch(e){}return}back()});
+function goBack(){try{history.back()}catch(e){back()}}
+
+/* ---------- toast & modal ---------- */
+let toastTimer;
+function toast(msg,actLabel,act){const r=$('#toastRoot');clearTimeout(toastTimer);r.innerHTML='';const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');
+ const sp=document.createElement('span');sp.textContent=msg;t.appendChild(sp);
+ if(actLabel){const b=document.createElement('button');b.textContent=actLabel;b.onclick=()=>{r.innerHTML='';act()};t.appendChild(b)}
+ r.appendChild(t);toastTimer=setTimeout(()=>{r.innerHTML=''},actLabel?7000:2800)}
+let lastFocus=null;
+function openModal(html,onMount){lastFocus=document.activeElement;const r=$('#modalRoot');
+ r.innerHTML='<div class="ov" role="presentation"><div class="sheet" role="dialog" aria-modal="true">'+html+'</div></div>';
+ const ov=r.firstChild;ov.addEventListener('click',e=>{if(e.target===ov)closeModal()});
+ const sh=ov.firstChild;const f=sh.querySelectorAll('button,input,select,[tabindex]');if(f[0])f[0].focus();
+ sh.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal()}if(e.key==='Tab'){const q=[...sh.querySelectorAll('button,input,select,a[href]')].filter(x=>!x.disabled);if(!q.length)return;const a=q[0],z=q[q.length-1];
+  if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}}});
+ if(onMount)onMount(sh)}
+function closeModal(){$('#modalRoot').innerHTML='';if(lastFocus&&lastFocus.focus)lastFocus.focus()}
+function ask(msg,okLabel,danger){return new Promise(res=>{openModal('<p>'+esc(msg)+'</p><div class="row2"><button class="btn ghost" id="mNo">'+esc(T('cancel'))+'</button><button class="btn '+(danger?'dng':'pri')+'" id="mOk">'+esc(okLabel||T('ok'))+'</button></div>',sh=>{
+ sh.querySelector('#mNo').onclick=()=>{closeModal();res(false)};sh.querySelector('#mOk').onclick=()=>{closeModal();res(true)}})})}
+
+/* ---------- HOME ---------- */
+function polar(cx,cy,r,deg){const a=(deg-90)*Math.PI/180;return[cx+r*Math.cos(a),cy+r*Math.sin(a)]}
+function arcPath(r,a0,a1){if(a1-a0>=359.9)a1=a0+359.9;const[x0,y0]=polar(160,160,r,a0),[x1,y1]=polar(160,160,r,a1);return'M'+x0.toFixed(2)+' '+y0.toFixed(2)+' A'+r+' '+r+' 0 '+((a1-a0)>180?1:0)+' 1 '+x1.toFixed(2)+' '+y1.toFixed(2)}
+function dialSVG(){let s='<circle class="ring" cx="160" cy="160" r="150"/>';
+ for(let i=0;i<60;i++){const big=i%5===0;const[x0,y0]=polar(160,160,150,i*6),[x1,y1]=polar(160,160,big?138:144,i*6);s+='<line class="tick'+(big?' big':'')+'" x1="'+x0.toFixed(1)+'" y1="'+y0.toFixed(1)+'" x2="'+x1.toFixed(1)+'" y2="'+y1.toFixed(1)+'" stroke-width="'+(big?2:1)+'"/>'}
+ [12,3,6,9].forEach(n=>{const[x,y]=polar(160,160,122,(n%12)*30);s+='<text class="num" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'">'+n+'</text>'});
+ s+='<path id="arcB" class="arc b" d=""/><path id="arcO" class="arc o" d=""/><circle id="hand" class="hand" r="6" cx="160" cy="10"/>';return s}
+function minToDeg(ms){const d=new Date(ms);return((d.getHours()%12)*60+d.getMinutes()+d.getSeconds()/60)/720*360}
+function renderHome(){const j=job(S.cur);const a=S.active;const aj=a?job(a.jobId):j;
+ $('#jobChipName').textContent=aj.name;$('#jobDot').style.background=aj.color;
+ const dial=$('#dial');if(!dial.firstChild)dial.innerHTML=dialSVG();
+ $('#verLbl').textContent='v'+VERSION;
+ // banners
+ let b='';if(a){const hrs=activeElapsedMs()/3600000;if(hrs>=16)b+='<div class="banner warn"><p>'+esc(T('longShift',{h:Math.floor(hrs)}))+'</p><button class="btn" id="bFix">'+esc(T('fixNow'))+'</button></div>'}
+ if(S.shifts.length>5&&Date.now()-(S.lastBackup||0)>14*DAY_MS)b+='<div class="banner"><p>'+esc(T('backupNudge'))+'</p><button class="btn" id="bBk">'+esc(T('exportJson'))+'</button></div>';
+ const hb=$('#homeBanner');if(hb.dataset.v!==b){hb.innerHTML=b;hb.dataset.v=b;const f=$('#bFix');if(f)f.onclick=()=>clockOut(true);const k=$('#bBk');if(k)k.onclick=exportJSON}
+ tick();
+ // buttons
+ const bp=$('#btnPunch'),bz=$('#btnPause');
+ bp.innerHTML='<svg><use href="#i-'+(a?'out':'in')+'"/></svg><span>'+esc(T(a?'clockOut':'clockIn'))+'</span>';
+ bp.classList.toggle('pri',true);
+ bz.hidden=!a;if(a)bz.innerHTML='<svg><use href="#i-cup"/></svg><span>'+esc(T(a.pausedAt?'resume':'pause'))+'</span>';
+ updateStats()}
+function updateStats(){const a=S.active;const aj=a?job(a.jobId):job(S.cur);
+ const now=Date.now();const[y,m,d]=dayParts(now);const t0=new Date(y,m,d).getTime();
+ const td=summary(t0,t0+DAY_MS*1.5,aj);let tMin=td.list.filter(s=>s.start<new Date(y,m,d+1).getTime()).reduce((x,s)=>x+calc(s,aj).min,0);
+ let tPay=td.list.filter(s=>s.start<new Date(y,m,d+1).getTime()).reduce((x,s)=>x+calc(s,aj).pay,0);
+ const pr=periodRange(periodOf(now,aj));const ps=summary(pr.from,pr.to,aj);let pMin=ps.min,pPay=ps.gross;
+ if(a){const lc=calc({kind:'work',start:a.start,end:now,pauseMin:activePauseMin(now),forceType:'auto'},aj);if(a.start>=t0){tMin+=lc.min;tPay+=lc.pay}if(a.start>=pr.from){pMin+=lc.min;pPay+=lc.pay}}
+ $('#stTodayH').textContent=fmtH(tMin);$('#stTodayP').textContent=money(r2(tPay));
+ $('#stPerH').textContent=fmtH(pMin);$('#stPerP').textContent=money(r2(pPay))}
+function tick(){const a=S.active,now=Date.now();const aj=a?job(a.jobId):job();
+ const hand=$('#hand');if(!hand)return;const[hx,hy]=polar(160,160,150,minToDeg(now));hand.setAttribute('cx',hx.toFixed(1));hand.setAttribute('cy',hy.toFixed(1));
+ const lbl=$('#dLbl'),big=$('#dBig'),sub=$('#dSub');
+ if(!a){$('#arcB').setAttribute('d','');$('#arcO').setAttribute('d','');lbl.className='dlbl';lbl.textContent=T('offWork');big.textContent=hhmm(now);
+  sub.textContent=fmtDay(now,{weekday:'long',day:'numeric',month:'long'});$('#dial').setAttribute('aria-label',T('offWork'));return}
+ const el=activeElapsedMs(now);const s=Math.floor(el/1000);big.textContent=Math.floor(s/3600)+':'+pad(Math.floor(s%3600/60))+':'+pad(s%60);
+ lbl.className='dlbl live';lbl.textContent=a.pausedAt?T('onBreak'):T('atWork',{t:hhmm(a.start)});
+ const lc=calc({kind:'work',start:a.start,end:now,pauseMin:activePauseMin(now),forceType:'auto'},aj);
+ sub.innerHTML=esc(T('earnedNow',{v:''})).trim()+' <b>'+esc(money(lc.pay))+'</b>';
+ // arc: from clock-in position on a 12h face, length = worked time; base part vs overtime part
+ const a0=minToDeg(a.start),baseMin=num(aj.types[lc.type].base)*60;const wm=el/60000;
+ const bEnd=a0+Math.min(wm,baseMin,720)/720*360;$('#arcB').setAttribute('d',wm>0.5?arcPath(150,a0,Math.max(bEnd,a0+0.5)):'');
+ $('#arcO').setAttribute('d',wm>baseMin&&baseMin<720?arcPath(150,bEnd,a0+Math.min(wm,720)/720*360):'');
+ $('#dial').setAttribute('aria-label',lbl.textContent)}
+let secs=0;setInterval(()=>{if(!$('#s-home').classList.contains('on'))return;secs++;tick();if(S.active&&secs%5===0)updateStats();if(secs%60===0)renderHome()},1000);
+
+/* ---------- job picker ---------- */
+function pickJob(){if(S.active){toast(T('activeLocked'));return}
+ let h='<h2>'+esc(T('selectJob'))+'</h2><div class="stack">';S.jobs.forEach(j=>{h+='<button class="jobcard'+(j.id===S.cur?' act':'')+'" data-id="'+j.id+'"><span class="dot" style="background:'+esc(j.color)+'"></span><span class="n">'+esc(j.name)+'<small>'+esc(T('perHour',{v:money(j.wage)}))+'</small></span></button>'});
+ h+='</div><button class="btn ghost" id="mX">'+esc(T('close'))+'</button>';
+ openModal(h,sh=>{sh.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{S.cur=b.dataset.id;save();closeModal();rerenderAll()});sh.querySelector('#mX').onclick=closeModal})}
+
+/* ---------- theme sheet ---------- */
+const THEMES={gold:'#D4AF37',silver:'#C3CBD3',copper:'#CF7F4F',emerald:'#3FB68B',sapphire:'#6F98F0'};
+function themeControls(){let h='<div class="swatches" role="group" aria-label="'+esc(T('theme'))+'">';
+ for(const k in THEMES)h+='<button data-th="'+k+'" aria-pressed="'+(S.theme===k)+'" style="background:'+THEMES[k]+'" aria-label="'+esc(T('th_'+k))+'" title="'+esc(T('th_'+k))+'"></button>';
+ h+='</div><div class="fld"><label for="mDay">'+esc(T('dayMode'))+'</label><span class="sw"><input type="checkbox" id="mDay" '+(S.mode==='day'?'checked':'')+'><span></span></span></div>';return h}
+function bindTheme(root){root.querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{S.theme=b.dataset.th;save();applyLook();root.querySelectorAll('[data-th]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+ const d=root.querySelector('#mDay');if(d)d.onchange=()=>{S.mode=d.checked?'day':'night';save();applyLook()}}
+function themeSheet(){openModal('<h2>'+esc(T('theme'))+'</h2>'+themeControls()+'<button class="btn ghost" id="mX" style="margin-top:12px">'+esc(T('close'))+'</button>',sh=>{bindTheme(sh);sh.querySelector('#mX').onclick=closeModal})}
+
+/* ---------- SHIFTS ---------- */
+let viewP=null;
+function renderShifts(){const j=job();if(!viewP||viewP.jobId!==j.id)viewP=Object.assign(periodOf(Date.now(),j),{jobId:j.id});
+ const pr=periodRange(viewP);
+ $('#pLbl').textContent=viewP.P===1?fmtDay(pr.from,{month:'long',year:'numeric'}):fmtDay(pr.from,{day:'numeric',month:'numeric'})+' – '+fmtDay(pr.to-1,{day:'numeric',month:'numeric',year:'numeric'});
+ const sm=summary(pr.from,pr.to,j);const L=$('#shiftList');
+ if(!sm.n){L.innerHTML='<div class="empty"><b>'+esc(T('noShifts'))+'</b>'+esc(T('noShiftsHint'))+'</div>';$('#sumDetail').innerHTML='';$('#sumBar').hidden=true;return}
+ let h='';sm.list.slice().reverse().forEach(s=>{const c=calc(s,j);const col=s.kind==='work'?typeColor(c.type):'var(--mut)';
+  const wd=fmtDay(s.start,{weekday:'short',day:'numeric',month:'numeric'});
+  const times=s.kind==='work'?hhmm(s.start)+' – '+hhmm(s.end):'';
+  h+='<div class="shift" data-id="'+s.id+'"><button aria-expanded="false"><span class="stripe" style="background:'+col+'"></span><span><span class="d">'+esc(wd)+'</span>'+
+   (s.kind!=='work'?'<span class="tag">'+esc(T('k_'+s.kind))+'</span>':(c.type!=='morning'?'<span class="tag">'+esc(T('t_'+c.type))+'</span>':''))+
+   '<br><span class="t">'+esc(times||T('dayOff'))+'</span></span><span class="p"><b>'+esc(money(c.pay))+'</b><span>'+(s.kind==='work'?fmtH(c.min):'')+'</span></span></button><div class="more">'+shiftDetail(s,c,j)+
+   '<button class="btn" data-edit="'+s.id+'" style="margin-top:10px">'+esc(T('edit'))+'</button></div></div>'});
+ L.innerHTML=h;
+ L.querySelectorAll('.shift>button').forEach(b=>b.onclick=()=>{const p=b.parentNode;const o=p.classList.toggle('open');b.setAttribute('aria-expanded',o)});
+ L.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openShiftEdit(b.dataset.edit));
+ $('#sumDetail').innerHTML='<div class="sumdetail"><div class="kv"><span>'+esc(T('gross'))+'</span><span>'+money(sm.gross)+'</span></div>'+
+  (sm.fixedAdd?'<div class="kv"><span>'+esc(T('fixedAdd'))+'</span><span>+'+money(sm.fixedAdd)+'</span></div>':'')+
+  (sm.fixedDed?'<div class="kv"><span>'+esc(T('fixedDed'))+'</span><span>−'+money(sm.fixedDed)+'</span></div>':'')+
+  '<div class="kv"><span><b>'+esc(T('total'))+'</b></span><span><b>'+money(sm.total)+'</b></span></div></div><div style="height:70px"></div>';
+ $('#sumBar').hidden=false;$('#sbN').textContent=sm.n;$('#sbH').textContent=fmtH(sm.min);$('#sbP').textContent=money(sm.total)}
+function typeColor(t){return({morning:'var(--acc)',afternoon:'var(--acc2)',night:'#7d86a8',shabbat:'#c9a0dc'})[t]||'var(--acc)'}
+function shiftDetail(s,c,j){let h='';
+ if(s.kind==='work'){h+='<div class="kv"><span>'+esc(T('shiftType'))+'</span><span>'+esc(T('t_'+c.type))+'</span></div>';
+  h+='<div class="kv"><span>'+esc(T('breakdown'))+'</span><span style="direction:ltr">'+c.tiers.filter(t=>t.m>0).map(t=>fmtH(t.m)+' × '+t.p+'%').join('  ')+'</span></div>';
+  if(num(s.pauseMin))h+='<div class="kv"><span>'+esc(T('pauseMin'))+'</span><span>'+Math.round(num(s.pauseMin))+'</span></div>';
+  if(c.breakDed)h+='<div class="kv"><span>'+esc(T('breakDed'))+'</span><span>'+Math.round(c.breakDed)+' '+esc(T('pauseMin').replace(/.*\(|\).*/g,''))+'</span></div>';
+  if(c.travel)h+='<div class="kv"><span>'+esc(T('travel'))+'</span><span>'+money(c.travel)+'</span></div>'}
+ if(c.bonus)h+='<div class="kv"><span>'+esc(T('bonus'))+'</span><span>+'+money(c.bonus)+'</span></div>';
+ if(c.deduct)h+='<div class="kv"><span>'+esc(T('deduct'))+'</span><span>−'+money(c.deduct)+'</span></div>';
+ if(s.note)h+='<div class="kv"><span>'+esc(T('note'))+'</span><span>'+esc(s.note)+'</span></div>';return h}
+
+/* ---------- ADD / EDIT ---------- */
+let ED=null;
+function startNewShift(dateMs){const now=dateMs||Date.now();ED={id:null,kind:'work',date:isoDate(now),st:'08:00',en:'17:00',p24:false,pause:0,type:'auto',bonus:0,deduct:0,note:''}}
+function openShiftEdit(id){const s=S.shifts.find(x=>x.id===id);if(!s)return;
+ ED={id:s.id,kind:s.kind,date:isoDate(s.start),st:s.kind==='work'?hhmm(s.start):'08:00',en:s.kind==='work'?hhmm(s.end):'17:00',p24:s.kind==='work'&&(s.end-s.start)>DAY_MS,pause:num(s.pauseMin),type:s.forceType||'auto',bonus:num(s.bonus),deduct:num(s.deduct),note:s.note||''};
+ go('add',true);screenStack.push('add');try{history.pushState({s:'add'},'')}catch(e){}}
+function edTimes(){const[y,m,d]=ED.date.split('-').map(Number);const a=hm(ED.st),b=hm(ED.en);
+ const start=new Date(y,m-1,d,Math.floor(a/60),a%60).getTime();let endDay=d+(b<=a?1:0)+(ED.p24?1:0);
+ const end=new Date(y,m-1,endDay,Math.floor(b/60),b%60).getTime();return{start,end,next:b<=a||ED.p24}}
+function edShift(){const t=edTimes();return{id:ED.id,jobId:ED.id?(S.shifts.find(x=>x.id===ED.id)||{}).jobId||S.cur:S.cur,kind:ED.kind,
+ start:ED.kind==='work'?t.start:new Date(...ED.date.split('-').map((v,i)=>i===1?v-1:+v),12).getTime(),end:ED.kind==='work'?t.end:null,
+ pauseMin:ED.kind==='work'?Math.max(0,num(ED.pause)):0,forceType:ED.type,bonus:num(ED.bonus),deduct:num(ED.deduct),note:String(ED.note||'').slice(0,300)}}
+function renderAdd(){if(!ED)startNewShift();$('#addTitle').textContent=T(ED.id?'editShift':'manualAdd');const j=job();
+ const kinds=['work','holiday','vacation','sick','reserve'];
+ let h='<div class="card"><div class="seg" role="group" aria-label="'+esc(T('kind'))+'">'+kinds.map(k=>'<button data-kind="'+k+'" aria-pressed="'+(ED.kind===k)+'">'+esc(T('k_'+k))+'</button>').join('')+'</div>'+
+  '<div class="fld"><label for="eDate">'+esc(T('date'))+'</label><input type="date" id="eDate" value="'+esc(ED.date)+'"></div>';
+ if(ED.kind==='work'){const t=edTimes();
+  h+='<div class="fld"><label for="eSt">'+esc(T('start'))+'</label><input type="time" id="eSt" value="'+esc(ED.st)+'"></div>'+
+   '<div class="fld"><label for="eEn">'+esc(T('end'))+'<small id="eNext">'+(t.next?esc(T('nextDayNote')):'')+'</small></label><input type="time" id="eEn" value="'+esc(ED.en)+'"></div>'+
+   '<div class="fld"><label for="eP24">'+esc(T('plus24'))+'</label><span class="sw"><input type="checkbox" id="eP24" '+(ED.p24?'checked':'')+'><span></span></span></div>'+
+   '<div class="fld"><label for="ePause">'+esc(T('pauseMin'))+'</label><input type="number" inputmode="numeric" min="0" id="ePause" value="'+esc(ED.pause)+'"></div>'+
+   '<div class="fld"><label for="eType">'+esc(T('shiftType'))+'<small id="eDet"></small></label><select id="eType">'+['auto','morning','afternoon','night','shabbat'].map(k=>'<option value="'+k+'"'+(ED.type===k?' selected':'')+'>'+esc(T('t_'+k))+'</option>').join('')+'</select></div>'}
+ h+='<div class="fld"><label for="eBonus">'+esc(T('bonus'))+'</label><input type="number" inputmode="decimal" min="0" id="eBonus" value="'+esc(ED.bonus)+'"></div>'+
+  '<div class="fld"><label for="eDed">'+esc(T('deduct'))+'</label><input type="number" inputmode="decimal" min="0" id="eDed" value="'+esc(ED.deduct)+'"></div>'+
+  '<div class="fld col"><label for="eNote">'+esc(T('note'))+'</label><textarea id="eNote" maxlength="300">'+esc(ED.note)+'</textarea></div></div>'+
+  '<div class="preview" aria-live="polite"><span id="pvH"></span><b id="pvP"></b></div>'+
+  '<div class="stack"><button class="btn pri big" id="eSave">'+esc(T('saveShift'))+'</button>'+
+  (ED.id?'<button class="btn dng" id="eDel">'+esc(T('deleteShift'))+'</button>':'<button class="btn" id="eNextBtn">'+esc(T('saveNext'))+'</button>')+'</div>';
+ $('#addForm').innerHTML=h;
+ const F=$('#addForm');
+ F.querySelectorAll('[data-kind]').forEach(b=>b.onclick=()=>{ED.kind=b.dataset.kind;renderAdd()});
+ const bind=(id,key,ev)=>{const e=F.querySelector('#'+id);if(e)e.addEventListener(ev||'input',()=>{ED[key]=e.type==='checkbox'?e.checked:e.value;edPreview()})};
+ bind('eDate','date');bind('eSt','st');bind('eEn','en');bind('eP24','p24','change');bind('ePause','pause');bind('eType','type','change');bind('eBonus','bonus');bind('eDed','deduct');bind('eNote','note');
+ $('#eSave').onclick=()=>saveShift(false);
+ if(ED.id)$('#eDel').onclick=async()=>{if(await ask(T('deleteShiftQ'),T('del'),true))softDelete(ED.id,true)};
+ else $('#eNextBtn').onclick=()=>saveShift(true);
+ edPreview()}
+function edPreview(){const s=edShift();const j=job(s.jobId);const c=calc(s,j);
+ $('#pvH').textContent=s.kind==='work'?fmtH(c.min)+' '+T('hours'):T('k_'+s.kind);$('#pvP').textContent=money(c.pay);
+ const n=$('#eNext');if(n)n.textContent=edTimes().next?T('nextDayNote'):'';
+ const d=$('#eDet');if(d)d.textContent=ED.type==='auto'&&s.kind==='work'?T('detected',{t:T('t_'+c.type)}):''}
+function saveShift(next){if(!ED.date){return}
+ if(ED.kind==='work'&&hm(ED.st)===hm(ED.en)&&!ED.p24){toast(T('sameTime'));return}
+ const s=edShift();if(!s.jobId)s.jobId=S.cur;
+ if(ED.id){const i=S.shifts.findIndex(x=>x.id===ED.id);if(i>=0){s.deleted=null;S.shifts[i]=s}}else{s.id=uid();S.shifts.push(s)}
+ if(!save())return;toast(T('shiftSaved'));viewP=Object.assign(periodOf(s.start,job(s.jobId)),{jobId:s.jobId});
+ if(next){const[y,m,d]=ED.date.split('-').map(Number);const keep=Object.assign({},ED);startNewShift(new Date(y,m-1,d+1,12).getTime());
+  Object.assign(ED,{kind:keep.kind,st:keep.st,en:keep.en,p24:keep.p24,pause:keep.pause,type:keep.type});renderAdd();window.scrollTo(0,0)}
+ else{ED=null;goBack()}}
+function softDelete(id,fromEdit){const s=S.shifts.find(x=>x.id===id);if(!s)return;s.deleted=Date.now();save();
+ if(fromEdit){ED=null;goBack()}else rerenderAll();
+ toast(T('deleted'),T('undo'),()=>{s.deleted=null;save();rerenderAll()})}
+
+/* ---------- JOBS ---------- */
+let editJobId=null;
+function renderJobs(){let h='';S.jobs.forEach(j=>{h+='<button class="jobcard'+(j.id===S.cur?' act':'')+'" data-id="'+j.id+'"><span class="dot" style="background:'+esc(j.color)+'"></span><span class="n">'+esc(j.name)+
+ '<small>'+esc(T('perHour',{v:money(j.wage)}))+(j.id===S.cur?' · '+esc(T('activeJob')):'')+'</small></span><svg style="width:18px;height:18px;color:var(--mut);transform:rotate(90deg)"><use href="#i-down"/></svg></button>'});
+ $('#jobList').innerHTML=h;$('#jobList').querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{editJobId=b.dataset.id;go('job')})}
+const JCOLORS=['#D4AF37','#4FA3D9','#E0675F','#62C18E','#B07CE8','#E89A3D','#8A95A5','#E86FA8'];
+function nf(label,path,val,opt){opt=opt||{};const id='jf_'+path.replace(/\./g,'_');return'<div class="fld"><label for="'+id+'">'+esc(label)+(opt.hint?'<small>'+esc(opt.hint)+'</small>':'')+'</label><input type="'+(opt.type||'number')+'" '+(opt.type?'':'inputmode="decimal" min="0" step="any"')+' id="'+id+'" data-f="'+path+'" value="'+esc(val)+'"'+(opt.dis?' disabled':'')+'></div>'}
+function sw(label,path,val){const id='jf_'+path.replace(/\./g,'_');return'<div class="fld"><label for="'+id+'">'+esc(label)+'</label><span class="sw"><input type="checkbox" id="'+id+'" data-f="'+path+'" '+(val?'checked':'')+'><span></span></span></div>'}
+function daySel(label,path,val){const id='jf_'+path.replace(/\./g,'_');let o='';for(let i=0;i<7;i++)o+='<option value="'+i+'"'+(+val===i?' selected':'')+'>'+esc(wdName(i))+'</option>';return'<div class="fld"><label for="'+id+'">'+esc(label)+'</label><select id="'+id+'" data-f="'+path+'">'+o+'</select></div>'}
+function tierBlock(k,t){return nf(T('baseHours'),'types.'+k+'.base',t.base)+nf(T('ot1Hours'),'types.'+k+'.h1',t.h1)+nf(T('pct0'),'types.'+k+'.p0',t.p0)+nf(T('pct1'),'types.'+k+'.p1',t.p1)+nf(T('pct2'),'types.'+k+'.p2',t.p2)}
+function renderJob(){const j=S.jobs.find(x=>x.id===editJobId)||job();editJobId=j.id;const t=j.types;
+ let h='<div class="card"><div class="fld col"><label for="jf_name">'+esc(T('jobName'))+'</label><input type="text" class="wide" id="jf_name" data-f="name" maxlength="40" value="'+esc(j.name)+'" style="width:100%;min-height:46px;border-radius:10px;border:1px solid var(--ln);background:var(--sf2);padding:6px 12px"></div>'+
+ '<div class="fld col"><span class="lb">'+esc(T('color'))+'</span><div class="swatches">'+JCOLORS.map(c=>'<button data-col="'+c+'" aria-pressed="'+(j.color===c)+'" style="background:'+c+'" aria-label="'+c+'"></button>').join('')+'</div></div>'+
+ nf(T('wage'),'wage',j.wage)+sw(T('dayPayAuto'),'dayPayAuto',j.dayPayAuto)+nf(T('dayPay'),'dayPay',j.dayPayAuto?dayPay(j):j.dayPay,{dis:j.dayPayAuto})+
+ nf(T('fixedAddLbl'),'fixedAdd',j.fixedAdd)+nf(T('fixedDedLbl'),'fixedDed',j.fixedDed)+
+ nf(T('periodStart'),'periodStart',j.periodStart,{hint:T('periodHint')})+'</div>'+
+ '<div class="card"><h2>'+esc(T('secBreak'))+'</h2>'+nf(T('breakLen'),'breakMin',j.breakMin,{hint:T('breakHint')})+nf(T('breakAfter'),'breakAfter',j.breakAfter)+nf(T('travelDay'),'travel',j.travel)+'</div>'+
+ '<div class="card"><h2>'+esc(T('shiftTypes'))+'</h2>'+sw(T('overtimeOn'),'overtime',j.overtime)+
+ '<details class="tblock"><summary><span class="dot" style="background:'+typeColor('morning')+'"></span>'+esc(T('t_morning'))+'</summary><div class="body">'+tierBlock('morning',t.morning)+'</div></details>'+
+ '<details class="tblock"><summary><span class="dot" style="background:'+typeColor('afternoon')+'"></span>'+esc(T('t_afternoon'))+'</summary><div class="body">'+nf(T('afternoonStart'),'types.afternoon.start',t.afternoon.start,{type:'time'})+tierBlock('afternoon',t.afternoon)+'</div></details>'+
+ '<details class="tblock"><summary><span class="dot" style="background:'+typeColor('night')+'"></span>'+esc(T('t_night'))+'</summary><div class="body"><p class="note">'+esc(T('nightHint'))+'</p>'+nf(T('nightFrom'),'types.night.from',t.night.from,{type:'time'})+nf(T('nightTo'),'types.night.to',t.night.to,{type:'time'})+tierBlock('night',t.night)+'</div></details>'+
+ '<details class="tblock"><summary><span class="dot" style="background:'+typeColor('shabbat')+'"></span>'+esc(T('t_shabbat'))+'</summary><div class="body"><p class="note">'+esc(T('shabbatHint'))+'</p>'+daySel(T('shabbatFrom'),'types.shabbat.fromDay',t.shabbat.fromDay)+nf(T('shabbatFrom'),'types.shabbat.from',t.shabbat.from,{type:'time'})+daySel(T('shabbatTo'),'types.shabbat.toDay',t.shabbat.toDay)+nf(T('shabbatTo'),'types.shabbat.to',t.shabbat.to,{type:'time'})+tierBlock('shabbat',t.shabbat)+'</div></details></div>'+
+ '<div class="card"><h2>'+esc(T('absencePay'))+'</h2>'+['holiday','vacation','sick','reserve'].map(k=>nf(T('k_'+k)+' %','absence.'+k,j.absence[k])).join('')+'</div>'+
+ '<button class="btn dng" id="jDel">'+esc(T('deleteJob'))+'</button>';
+ const F=$('#jobForm');F.innerHTML=h;
+ F.querySelectorAll('[data-col]').forEach(b=>b.onclick=()=>{j.color=b.dataset.col;save();F.querySelectorAll('[data-col]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+ F.querySelectorAll('[data-f]').forEach(e=>{const ev=(e.type==='checkbox'||e.tagName==='SELECT')?'change':'input';e.addEventListener(ev,()=>{
+  const path=e.dataset.f.split('.');let o=j;for(let i=0;i<path.length-1;i++)o=o[path[i]];const k=path[path.length-1];
+  if(e.type==='checkbox')o[k]=e.checked;else if(e.type==='number'||e.tagName==='SELECT')o[k]=num(e.value);else o[k]=e.value;
+  if(k==='periodStart')o[k]=Math.min(28,Math.max(1,Math.round(o[k]||1)));
+  if(k==='name'&&!o[k].trim())o[k]=T('defaultJob');
+  save();if(e.type==='checkbox'&&k==='dayPayAuto')renderJob();
+  if(k==='wage'||path[0]==='types'){const dp=F.querySelector('#jf_dayPay');if(dp&&j.dayPayAuto)dp.value=dayPay(j)}})});
+ $('#jDel').onclick=async()=>{if(S.jobs.length<2){toast(T('lastJob'));return}
+  if(!await ask(T('deleteJobQ',{n:j.name}),T('del'),true))return;if(!await ask(T('deleteJobQ2'),T('del'),true))return;
+  S.shifts=S.shifts.filter(s=>s.jobId!==j.id);if(S.active&&S.active.jobId===j.id)S.active=null;S.jobs=S.jobs.filter(x=>x.id!==j.id);
+  if(S.cur===j.id)S.cur=S.jobs[0].id;save();goBack()}}
+function addJob(){const j=newJob(T('newJob'));const c=job();Object.assign(j,{wage:c.wage});j.color=JCOLORS[S.jobs.length%JCOLORS.length];S.jobs.push(j);save();editJobId=j.id;go('job')}
+
+/* ---------- SETTINGS ---------- */
+function renderSettings(){const lb=S.lastBackup?fmtDay(S.lastBackup,{day:'numeric',month:'numeric',year:'numeric'}):T('never');
+ let h='<div class="card"><div class="fld col"><label for="sName">'+esc(T('userName'))+'<small>'+esc(T('userNameHint'))+'</small></label><input type="text" id="sName" maxlength="40" value="'+esc(S.user)+'" style="width:100%;min-height:46px;border-radius:10px;border:1px solid var(--ln);background:var(--sf2);padding:6px 12px"></div>'+
+ '<div class="fld"><label for="sLang">'+esc(T('language'))+'</label><select id="sLang">'+LANGS.map((l,i)=>'<option value="'+l+'"'+(S.lang===l?' selected':'')+'>'+LANG_NAMES[i]+'</option>').join('')+'</select></div></div>'+
+ '<div class="card"><h2>'+esc(T('theme'))+'</h2>'+themeControls()+'</div>'+
+ '<div class="card"><h2>'+esc(T('backup'))+'</h2><p class="note">'+esc(T('lastBackup',{d:lb}))+'</p>'+
+  '<button class="linkrow" id="sExp"><svg><use href="#i-save"/></svg>'+esc(T('exportJson'))+'</button>'+
+  '<button class="linkrow" id="sImp"><svg><use href="#i-upload"/></svg>'+esc(T('importJson'))+'</button><input type="file" id="sFile" accept=".json,application/json" hidden>'+
+  '<button class="linkrow" id="sCsv"><svg><use href="#i-table"/></svg>'+esc(T('exportCsv'))+'</button>'+
+  '<button class="linkrow" data-go="bin"><svg><use href="#i-bin"/></svg>'+esc(T('recycleBin'))+'</button></div>'+
+ '<div class="card"><button class="linkrow" id="sTour"><svg><use href="#i-flag"/></svg>'+esc(T('tour'))+'</button>'+
+  '<button class="linkrow" data-go="diag"><svg><use href="#i-pulse"/></svg>'+esc(T('diagnostics'))+'</button>'+
+  '<button class="linkrow" data-go="about"><svg><use href="#i-info"/></svg>'+esc(T('about'))+'</button>'+
+  '<a class="linkrow" href="privacy_policy.html" target="_blank" rel="noopener"><svg><use href="#i-lock"/></svg>'+esc(T('privacy'))+'</a>'+
+  '<button class="linkrow dng" id="sReset"><svg><use href="#i-bin"/></svg>'+esc(T('resetAll'))+'</button></div>';
+ const F=$('#setForm');F.innerHTML=h;bindTheme(F);bindGo(F);
+ $('#sName').addEventListener('input',e=>{S.user=e.target.value;save()});
+ $('#sLang').onchange=e=>{S.lang=e.target.value;save();rerenderAll()};
+ $('#sExp').onclick=exportJSON;$('#sImp').onclick=()=>$('#sFile').click();$('#sFile').onchange=importJSON;$('#sCsv').onclick=exportCSV;
+ $('#sTour').onclick=()=>onboarding(0);
+ $('#sReset').onclick=async()=>{if(!await ask(T('resetQ1'),T('del'),true))return;if(!await ask(T('resetQ2'),T('del'),true))return;
+  store.del(SKEY);store.del(EKEY);S=defState();load();save();screenStack.length=1;go('home',true);rerenderAll();onboarding(0)}}
+
+/* ---------- backup / export ---------- */
+function download(name,text,type){const blob=new Blob([text],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);return blob}
+async function shareOrDownload(name,text,type){try{const file=new File([text],name,{type});if(navigator.canShare&&navigator.canShare({files:[file]})&&/Android|iPhone|iPad/i.test(navigator.userAgent)){await navigator.share({files:[file],title:'WorkNest',text:'WorkNest'+(S.user?' — '+S.user:'')});return}}catch(e){if(e&&e.name==='AbortError')return}
+ download(name,text,type)}
+function exportJSON(){const d=new Date();const body=JSON.stringify({app:'WorkNest',version:VERSION,exported:d.toISOString(),user:S.user,data:S},null,1);
+ S.lastBackup=Date.now();save();shareOrDownload('worknest-backup-'+isoDate(d.getTime())+'.json',body,'application/json');const hb=$('#homeBanner');if(hb)hb.dataset.v='x';renderHome();if($('#s-settings').classList.contains('on'))renderSettings()}
+function importJSON(e){const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;const rd=new FileReader();rd.onload=async()=>{let o;try{o=JSON.parse(rd.result)}catch(x){toast(T('importBad'));return}
+ if(!o||o.app!=='WorkNest'||!o.data||!Array.isArray(o.data.jobs)){toast(T('importBad'));return}
+ if(!await ask(T('importQ'),T('restore'),true))return;S=migrate(o.data);fixup();viewP=null;save();toast(T('importDone'));rerenderAll()};rd.readAsText(f)}
+function csvCell(v){v=String(v==null?'':v);return/[",\n;]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function exportCSV(){const j=job();const p=viewP&&viewP.jobId===j.id?viewP:periodOf(Date.now(),j);const pr=periodRange(p);const sm=summary(pr.from,pr.to,j);
+ const rows=[[T('csvTitle'),j.name],[T('userName'),S.user],[T('exported'),fmtDay(Date.now(),{dateStyle:'short',timeStyle:'short'})],[],
+  [T('date'),T('weekday'),T('kind'),T('shiftType'),T('inLbl'),T('outLbl'),T('hours'),T('pay'),T('note')]];
+ sm.list.forEach(s=>{const c=calc(s,j);rows.push([isoDate(s.start),wdName(new Date(s.start).getDay(),'short'),T('k_'+s.kind),s.kind==='work'?T('t_'+c.type):'',s.kind==='work'?hhmm(s.start):'',s.kind==='work'?hhmm(s.end):'',s.kind==='work'?fmtH(c.min):'',c.pay,s.note||''])});
+ rows.push([],[T('reports'),sm.n],[T('hours'),fmtH(sm.min)],[T('gross'),sm.gross],[T('fixedAdd'),sm.fixedAdd],[T('fixedDed'),sm.fixedDed],[T('total'),sm.total]);
+ const txt='\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
+ shareOrDownload('worknest-'+j.name.replace(/[^\w\u0590-\u05FF\u0600-\u06FF-]+/g,'_')+'-'+isoDate(pr.from)+'.csv',txt,'text/csv')}
+
+/* ---------- BIN ---------- */
+function renderBin(){purgeBin();const del=S.shifts.filter(s=>s.deleted).sort((a,b)=>b.deleted-a.deleted);const L=$('#binList');
+ if(!del.length){L.innerHTML='<div class="empty"><b>'+esc(T('binEmpty'))+'</b></div>';return}
+ let h='';del.forEach(s=>{const j=job(s.jobId);const c=calc(s,j);h+='<div class="shift open"><div style="padding:12px 14px"><b>'+esc(fmtDay(s.start,{weekday:'short',day:'numeric',month:'numeric',year:'numeric'}))+'</b> <span class="tag">'+esc(j.name)+'</span><br><span class="t">'+(s.kind==='work'?hhmm(s.start)+' – '+hhmm(s.end):esc(T('k_'+s.kind)))+'</span> · '+money(c.pay)+
+  '<div class="row2" style="margin-top:10px"><button class="btn" data-rs="'+s.id+'">'+esc(T('restore'))+'</button><button class="btn dng" data-df="'+s.id+'">'+esc(T('deleteForever'))+'</button></div></div></div>'});
+ h+='<button class="btn dng" id="bEmpty" style="margin-top:10px">'+esc(T('emptyBin'))+'</button>';L.innerHTML=h;
+ L.querySelectorAll('[data-rs]').forEach(b=>b.onclick=()=>{const s=S.shifts.find(x=>x.id===b.dataset.rs);if(s){s.deleted=null;save();toast(T('restored'));renderBin()}});
+ L.querySelectorAll('[data-df]').forEach(b=>b.onclick=async()=>{if(await ask(T('deleteForever')+'?',T('del'),true)){S.shifts=S.shifts.filter(x=>x.id!==b.dataset.df);save();renderBin()}});
+ $('#bEmpty').onclick=async()=>{if(await ask(T('emptyBinQ'),T('del'),true)){S.shifts=S.shifts.filter(x=>!x.deleted);save();renderBin()}}}
+
+/* ---------- DIAG ---------- */
+async function diagData(){let persisted='?';try{persisted=navigator.storage&&navigator.storage.persisted?(await navigator.storage.persisted()):'?'}catch(e){}
+ const sw=('serviceWorker' in navigator)&&!!navigator.serviceWorker.controller;
+ const standalone=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+ let size=0;try{size=(store.get(SKEY)||'').length}catch(e){}
+ let errs=[];try{errs=JSON.parse(localStorage.getItem(EKEY)||'[]')}catch(e){}
+ return{version:VERSION,standalone,storage:store.ok(),persisted,sw,size,jobs:S.jobs.length,shifts:S.shifts.filter(s=>!s.deleted).length,bin:S.shifts.filter(s=>s.deleted).length,ua:navigator.userAgent,lang:S.lang,errs}}
+async function renderDiag(){const d=await diagData();const yn=v=>v===true?T('yes'):v===false?T('no'):String(v);
+ let h='<div class="card">'+[['dg_version','v'+d.version],['dg_install',yn(d.standalone)],['dg_storage',d.storage?T('onDevice'):T('memOnly')],['dg_persist',yn(d.persisted)],['dg_sw',yn(d.sw)],
+  ['dg_data',d.jobs+' / '+d.shifts+' / '+d.bin+'  ('+Math.round(d.size/1024)+' KB)'],['dg_device',d.ua.replace(/^Mozilla\/5\.0 /,'').slice(0,70)]].map(r=>'<div class="dgrow"><span>'+esc(T(r[0]))+'</span><span>'+esc(r[1])+'</span></div>').join('')+'</div>'+
+  '<div class="card"><h2>'+esc(T('errLog'))+'</h2>'+(d.errs.length?'<pre class="diag">'+esc(d.errs.map(e=>e.t+' '+e.s+':'+e.l+' '+e.m).join('\n'))+'</pre>':'<p class="note">'+esc(T('noErrors'))+'</p>')+'</div>'+
+  '<button class="btn" id="dCopy">'+esc(T('copyReport'))+'</button>';
+ $('#diagBody').innerHTML=h;
+ $('#dCopy').onclick=async()=>{const txt='WorkNest diagnostics\n'+JSON.stringify(Object.assign({},d,{}),null,1);try{await navigator.clipboard.writeText(txt);toast(T('copied'))}catch(e){download('worknest-diagnostics.txt',txt,'text/plain')}}}
+
+/* ---------- ABOUT ---------- */
+function renderAbout(){const rows=[[T('dg_version'),'v'+VERSION],[T('ab_dev'),'Barak Aflalo'],[T('ab_platform'),'PWA · HTML5'],[T('dg_storage'),T('ab_storageVal')],[T('ab_license'),'© AppNest 2026']];
+ $('#aboutBody').innerHTML='<div class="aboutlogo"><img src="icon-192.png" alt=""><b>WorkNest</b><span class="note">'+esc(T('tagline'))+'</span></div><p>'+esc(T('aboutDesc'))+'</p>'+
+ '<div class="card">'+rows.map(r=>'<div class="dgrow"><span>'+esc(r[0])+'</span><span>'+esc(r[1])+'</span></div>').join('')+'</div>'+
+ '<div class="card"><a class="linkrow" href="https://barakaflalo.github.io/appnest" target="_blank" rel="noopener"><svg><use href="#i-store"/></svg>'+esc(T('store'))+'</a>'+
+ '<button class="linkrow" id="aShare"><svg><use href="#i-share"/></svg>'+esc(T('share'))+'</button>'+
+ '<a class="linkrow" href="mailto:appnest55@gmail.com?subject=WorkNest%20v'+VERSION+'"><svg><use href="#i-mail"/></svg>'+esc(T('feedback'))+'</a>'+
+ '<button class="linkrow" id="aTour"><svg><use href="#i-flag"/></svg>'+esc(T('tour'))+'</button>'+
+ '<a class="linkrow" href="privacy_policy.html" target="_blank" rel="noopener"><svg><use href="#i-lock"/></svg>'+esc(T('privacy'))+'</a></div>'+
+ '<p class="disc">'+esc(T('disclaimer'))+'</p>';
+ $('#aShare').onclick=async()=>{const url=location.href.split('#')[0];try{if(navigator.share){await navigator.share({title:'WorkNest',text:T('tagline')+(S.user?' — '+S.user:''),url});return}}catch(e){return}try{await navigator.clipboard.writeText(url);toast(T('copied'))}catch(e){}};
+ $('#aTour').onclick=()=>onboarding(0)}
+
+/* ---------- onboarding ---------- */
+function onboarding(i){const steps=[['ob1t','ob1b'],['ob2t','ob2b'],['ob3t','ob3b'],['ob4t','ob4b'],['ob5t','ob5b']];const last=i===steps.length-1;
+ openModal('<div class="ob"><svg><use href="#i-clock"/></svg><h2>'+esc(T(steps[i][0]))+'</h2><p>'+esc(T(steps[i][1]))+'</p>'+
+  (i===0?'<div class="fld" style="border:0"><label for="obLang">'+esc(T('language'))+'</label><select id="obLang">'+LANGS.map((l,k)=>'<option value="'+l+'"'+(S.lang===l?' selected':'')+'>'+LANG_NAMES[k]+'</option>').join('')+'</select></div>':'')+
+  '<div class="dots">'+steps.map((_,k)=>'<i class="'+(k===i?'on':'')+'"></i>').join('')+'</div><div class="row2"><button class="btn ghost" id="obSkip">'+esc(T('skip'))+'</button><button class="btn pri" id="obNext">'+esc(T(last?'letsGo':'next'))+'</button></div></div>',sh=>{
+  const fin=()=>{S.onboarded=true;save();closeModal()};
+  sh.querySelector('#obSkip').onclick=fin;sh.querySelector('#obNext').onclick=()=>{if(last)fin();else onboarding(i+1)};
+  const ol=sh.querySelector('#obLang');if(ol)ol.onchange=()=>{S.lang=ol.value;save();rerenderAll();onboarding(0)}})}
+
+/* ---------- wiring ---------- */
+function bindGo(root){root.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go))}
+function init(){load();applyLook();applyLang();bindGo(document);
+ document.querySelectorAll('[data-back]').forEach(b=>b.onclick=goBack);
+ $('#btnPunch').onclick=()=>S.active?clockOut(false):clockIn();
+ $('#btnPause').onclick=togglePause;$('#jobChip').onclick=pickJob;$('#btnMode').onclick=()=>{S.mode=S.mode==='day'?'night':'day';save();applyLook()};$('#btnAbout').onclick=()=>go('about');
+ $('#btnNewJob').onclick=addJob;
+ $('#pPrev').onclick=()=>{viewP.m--;if(viewP.m<0){viewP.m=11;viewP.y--}renderShifts()};
+ $('#pNext').onclick=()=>{viewP.m++;if(viewP.m>11){viewP.m=0;viewP.y++}renderShifts()};
+ try{history.replaceState({s:'home'},'')}catch(e){}
+ if(location.protocol==='file:')$('#fileWarn').innerHTML='<div class="banner warn" style="margin:10px 16px"><p style="margin:0">'+esc(T('fileWarn'))+'</p></div>';
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderHome()});
+ renderHome();save();
+ if(!S.onboarded)onboarding(0);
+ if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(e=>logErr('sw: '+e.message))}
+init();
+</script>
+</body>
+</html>
