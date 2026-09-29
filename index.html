@@ -2,6 +2,7 @@
 <html lang="he" dir="rtl" data-theme="gold" data-mode="night">
 <head>
 <meta charset="utf-8">
+<script>/* Moved to its own address. Redirect ONLY from the old GitHub Pages address (same repo feeds both). */(function(){try{if(location.hostname==='barakaflalo.github.io'){var p=location.pathname.replace(/^\/[^\/]+/,'')||'/';location.replace('https://worknest-app.pages.dev'+p+location.search+location.hash);}}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>WorkNest — מעקב שעות העבודה שלי</title>
@@ -1169,7 +1170,7 @@ async function renderDiag(){const d=await diagData();const yn=v=>v===true?T('yes
 function renderAbout(){const rows=[[T('dg_version'),'v'+VERSION],[T('ab_dev'),'Barak Aflalo'],[T('ab_platform'),'PWA · HTML5'],[T('dg_storage'),T('ab_storageVal')],[T('ab_license'),'© AppNest 2026']];
  $('#aboutBody').innerHTML='<div class="aboutlogo"><img src="icon-192.png" alt=""><b>WorkNest</b><span class="note">'+esc(T('tagline'))+'</span></div><p>'+esc(T('aboutDesc'))+'</p>'+
  '<div class="card">'+rows.map(r=>'<div class="dgrow"><span>'+esc(r[0])+'</span><span>'+esc(r[1])+'</span></div>').join('')+'</div>'+
- '<div class="card"><a class="linkrow" href="https://barakaflalo.github.io/appnest" target="_blank" rel="noopener"><svg><use href="#i-store"/></svg>'+esc(T('store'))+'</a>'+
+ '<div class="card"><a class="linkrow" href="https://appnest-store.pages.dev" target="_blank" rel="noopener"><svg><use href="#i-store"/></svg>'+esc(T('store'))+'</a>'+
  '<button class="linkrow" id="aShare"><svg><use href="#i-share"/></svg>'+esc(T('share'))+'</button>'+
  '<a class="linkrow" href="mailto:appnest55@gmail.com?subject=WorkNest%20v'+VERSION+'"><svg><use href="#i-mail"/></svg>'+esc(T('feedback'))+'</a>'+
  '<button class="linkrow" id="aTour"><svg><use href="#i-flag"/></svg>'+esc(T('tour'))+'</button>'+
